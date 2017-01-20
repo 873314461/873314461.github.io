@@ -1,0 +1,964 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="lexical,词法分析器,有限状态机,c++,NFA,DFA,正规式," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="浣熊窝" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言这个学期学了编译原理，所以，本学期的课程设计就是写一个词法分析器和一个语法分析器。一个很庞大的内容啊，12周就要交，于是趁着五一假期，在宿舍里写一发。
+任务要求Create a lexical analysis program, which supports analyzing regular grammar.You must use DFA (Deterministic Finite Aut">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手写词法分析器">
+<meta property="og:url" content="http://whaoyu.com/2016/05/01/lexical/index.html">
+<meta property="og:site_name" content="浣熊窝">
+<meta property="og:description" content="前言这个学期学了编译原理，所以，本学期的课程设计就是写一个词法分析器和一个语法分析器。一个很庞大的内容啊，12周就要交，于是趁着五一假期，在宿舍里写一发。
+任务要求Create a lexical analysis program, which supports analyzing regular grammar.You must use DFA (Deterministic Finite Aut">
+<meta property="og:updated_time" content="2017-01-20T09:02:07.044Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动手写词法分析器">
+<meta name="twitter:description" content="前言这个学期学了编译原理，所以，本学期的课程设计就是写一个词法分析器和一个语法分析器。一个很庞大的内容啊，12周就要交，于是趁着五一假期，在宿舍里写一发。
+任务要求Create a lexical analysis program, which supports analyzing regular grammar.You must use DFA (Deterministic Finite Aut">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6279647023285143000',
+      author: '浣熊'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://whaoyu.com/2016/05/01/lexical/"/>
+
+
+
+
+
+  <title> 动手写词法分析器 | 浣熊窝 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?2d88a85f453733863177faa20ea0e05b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">浣熊窝</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Hello, world!</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://whaoyu.com/2016/05/01/lexical/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="浣熊">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/default_avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浣熊窝">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="浣熊窝" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                动手写词法分析器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-01T19:16:35+08:00">
+                2016-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/课程设计/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/05/01/lexical/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/01/lexical/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/01/lexical/" class="leancloud_visitors" data-flag-title="动手写词法分析器">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这个学期学了编译原理，所以，本学期的课程设计就是写一个<strong>词法分析器</strong>和一个<strong>语法分析器</strong>。一个很庞大的内容啊，12周就要交，于是趁着五一假期，在宿舍里写一发。</p>
+<h2 id="任务要求"><a href="#任务要求" class="headerlink" title="任务要求"></a>任务要求</h2><p>Create a lexical analysis program, which supports analyzing regular grammar.<br>You must use DFA (Deterministic Finite Automata) or NFA (Nondeterministic Finite Automata) to implement this program. The inputs of the program are a text document including a set of productions of 3º grammar (the regular grammar) and a source code text document contains a set of strings to be recoganized. The output of the program is a token table which consists of 5 types token: key words, identifier, const, limiter and operator.</p>
+<h2 id="准备资料"><a href="#准备资料" class="headerlink" title="准备资料"></a>准备资料</h2><p>先做一下理论知识的储备。</p>
+<h3 id="正规式"><a href="#正规式" class="headerlink" title="正规式"></a>正规式</h3><p>设$G=(V_N, V_T, P, S)$，若P中的每一个产生式都是$A \rightarrow aB$和$A \rightarrow a$，其中A和B都是非终结符，$a \in V_T^*$，则G是<strong>3型文法</strong>或<strong>正规文法</strong></p>
+<h3 id="有穷自动机"><a href="#有穷自动机" class="headerlink" title="有穷自动机"></a>有穷自动机</h3><p>是一种识别装置，能够准确的识别正规集，即识别正规文法所定义的语言和正规式所表达的集合。</p>
+<a id="more"></a>
+<h2 id="正规式到NFA"><a href="#正规式到NFA" class="headerlink" title="正规式到NFA"></a>正规式到NFA</h2><h3 id="算法描述"><a href="#算法描述" class="headerlink" title="算法描述"></a>算法描述</h3><ol>
+<li>读入 A-&gt;aB 或 A-&gt;a</li>
+<li>若A不在map中，把A加入到map中；若A在map中，则进入第三步</li>
+<li>若B不存在，则把(a, B)加入到A的multimap中，然后把B加入到map中；若B存在，则把(a, y)加入到A的multimap中</li>
+<li>重复第1~3步，直到把文法全部读入</li>
+</ol>
+<p>我主要使用<code>map</code>和<code>multimap</code>来存储NFA。</p>
+<h3 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//第一行表示NFA的开始状态</span></div><div class="line"><span class="comment">//我通过tuple来存储了一个三元组，表示A-&gt;aB</span></div><div class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;len; i++)</div><div class="line">	&#123;</div><div class="line">		A = <span class="built_in">std</span>::get&lt;<span class="number">0</span>&gt;(grammar[i]);</div><div class="line">		a = <span class="built_in">std</span>::get&lt;<span class="number">1</span>&gt;(grammar[i]);</div><div class="line">		B = <span class="built_in">std</span>::get&lt;<span class="number">2</span>&gt;(grammar[i]);</div><div class="line">		<span class="comment">//统计终结符Vn和非终结符Vt</span></div><div class="line">		vn.insert(a);</div><div class="line">		vt.insert(A);</div><div class="line">		<span class="keyword">if</span> (B != <span class="string">"###"</span>)		<span class="comment">//###表示终止状态</span></div><div class="line">			vt.insert(B);</div><div class="line"></div><div class="line">		<span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="built_in">multimap</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; &gt;::iterator res;</div><div class="line">		res = nfa.find(A);</div><div class="line">		<span class="keyword">if</span> (res == nfa.end())</div><div class="line">		&#123;</div><div class="line">			nfa.insert(pair&lt;<span class="built_in">string</span>, <span class="built_in">multimap</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; &gt;(A, <span class="built_in">multimap</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;()));</div><div class="line">			res = nfa.find(A);</div><div class="line">		&#125;</div><div class="line">		res-&gt;second.insert(pair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(a, B));</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="NFA转DFA"><a href="#NFA转DFA" class="headerlink" title="NFA转DFA"></a>NFA转DFA</h2><h3 id="转换函数"><a href="#转换函数" class="headerlink" title="转换函数"></a>转换函数</h3><p>$D([S_1, S_2, …, S_j], a) = [R_1, R_2, …, R_i]$<br>其中$\varepsilon-closure(move([S_1, S_2, …, S_j], a)) = [R_1, R_2, …, R_i]$</p>
+<h3 id="最小集算法"><a href="#最小集算法" class="headerlink" title="最小集算法"></a>最小集算法</h3><p>因为在本程序中，没有$\varepsilon$，所以，$\varepsilon-closure$函数与$move$函数等价<br><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">开始，另closure(K_0)为C中的唯一成员，并且他是未被标记的</div><div class="line"><span class="keyword">while</span> C中存在未被标记的子集<span class="literal">T</span></div><div class="line">    标记<span class="literal">T</span></div><div class="line">    <span class="keyword">for</span> a <span class="keyword">in</span> 终结符集Vn</div><div class="line">        U = closure(move(<span class="literal">T</span>, a))</div><div class="line">        <span class="keyword">if</span> U不在C中</div><div class="line">            将U作为未标记的子集加入到C中</div></pre></td></tr></table></figure></p>
+<h3 id="核心代码-1"><a href="#核心代码-1" class="headerlink" title="核心代码"></a>核心代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (!c.empty())</div><div class="line">&#123;</div><div class="line">	pair&lt;<span class="keyword">int</span>, <span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt; &gt; t = c.front();</div><div class="line">	c.pop();								</div><div class="line">	buffer.insert(t.second);				</div><div class="line">	<span class="keyword">auto</span> pos = visit.find(t.first);</div><div class="line">	<span class="keyword">if</span> (pos != visit.end())					<span class="comment">//如果已经标记过，则跳过这个状态</span></div><div class="line">		<span class="keyword">continue</span>;</div><div class="line">	visit.insert(t.first);					<span class="comment">//标记T</span></div><div class="line">	</div><div class="line">	<span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; temp;</div><div class="line">	<span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt;::iterator i;</div><div class="line">	<span class="keyword">for</span> (i = vn.begin(); i != vn.end(); i++)</div><div class="line">	&#123;</div><div class="line">		<span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt; u = move(t.second, *i);</div><div class="line">		<span class="keyword">auto</span> pos = buffer.find(u);</div><div class="line">		<span class="keyword">if</span> (!(findInQueue(c, u) || pos != buffer.end()) &amp;&amp; !u.empty())  <span class="comment">//判断状态U是否在C中</span></div><div class="line">		&#123;</div><div class="line">			<span class="comment">//U不在C中，插入到C中</span></div><div class="line">			hash.insert(pair&lt;<span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt;, <span class="keyword">int</span>&gt;(u, id));			</div><div class="line">			rhash.insert(pair&lt;<span class="keyword">int</span>, <span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt; &gt;(id, u));</div><div class="line">			c.push(pair&lt;<span class="keyword">int</span>, <span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt; &gt;(id++, u));</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (!u.empty())</div><div class="line">		&#123;</div><div class="line">			<span class="built_in">map</span>&lt;<span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt;, <span class="keyword">int</span>&gt;::iterator res = hash.find(u);</div><div class="line">			temp.insert(pair&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt;(*i, res-&gt;second));</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	dfa.insert(pair&lt;<span class="keyword">int</span>, <span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; &gt;(t.first, temp));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="用DFA进行词法分析"><a href="#用DFA进行词法分析" class="headerlink" title="用DFA进行词法分析"></a>用DFA进行词法分析</h2><h3 id="算法说明"><a href="#算法说明" class="headerlink" title="算法说明"></a>算法说明</h3><ol>
+<li>预处理: 消除空白字符，主要使用<code>std::isspace(char ch)</code>来进行判断。</li>
+<li>读入下一个字符，并判断文件是否结束。</li>
+<li>对终结符进行转换。</li>
+<li>检查下一个字符是否符合DFA的规则。</li>
+<li>若符合，则加入到buffer中。判断是否是终结状态，如果是，则修改nearestAccept，并跳到第2步；否则直接跳到第2步。</li>
+<li>对于不符合规则的，退回到nearestAccept，然后提交buffer，并返回Token。</li>
+</ol>
+<p><strong>注意</strong>: 在进行匹配的过程中，我们遵循<strong>最长匹配优先</strong>的原则。<br>例如，当出现 abc 字符串的时候，我们的程序应该把 abc 作为一个Token，而不是把 a 或者 ab 作为一个Token。<br>因此，我们需要在程序中加入最近可接受nearestAccept变量，来记录目前最长的可接受字符串，当发生匹配错误时，应退回到nearestAccept的位置，并提交。</p>
+<h3 id="核心代码-2"><a href="#核心代码-2" class="headerlink" title="核心代码"></a>核心代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">string</span> Scanner::getToken()</div><div class="line">&#123;</div><div class="line">	preprocess();		<span class="comment">//预处理并初始化状态</span></div><div class="line">	bLine = line;</div><div class="line">	bColumn = column;</div><div class="line">	<span class="keyword">bool</span> stop = <span class="literal">false</span>;</div><div class="line">	nearestAccept = <span class="number">0</span>;</div><div class="line">	state = <span class="number">0</span>;</div><div class="line">	buffer.clear();</div><div class="line"></div><div class="line">	<span class="keyword">while</span> (!stop)</div><div class="line">	&#123;</div><div class="line">		<span class="keyword">char</span> c = peekChar();	<span class="comment">//预读一个字符</span></div><div class="line">		<span class="keyword">if</span> (c == EOF)			<span class="comment">//判断文件是否结束</span></div><div class="line">		&#123;</div><div class="line">			state = <span class="number">-2</span>;</div><div class="line">			<span class="keyword">return</span> <span class="string">"EOF"</span>;</div><div class="line">		&#125;</div><div class="line">		c = transform(c);</div><div class="line">		pair&lt;<span class="keyword">int</span>, <span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; &gt; res = dfa.find(state);</div><div class="line">		<span class="keyword">char</span> s[<span class="number">2</span>];</div><div class="line">		s[<span class="number">0</span>] = c;</div><div class="line">		s[<span class="number">1</span>] = <span class="string">'\0'</span>;</div><div class="line">		<span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt;::iterator i = res.second.find(s);</div><div class="line">		<span class="keyword">if</span> (i == res.second.end())</div><div class="line">		&#123;						<span class="comment">//DFA中找不到可行通路</span></div><div class="line">			stop = <span class="literal">true</span>;</div><div class="line">			<span class="built_in">string</span> temp = buffer.substr(nearestAccept);</div><div class="line">			buffer.erase(nearestAccept);</div><div class="line">			nextRead.insert(<span class="number">0</span>, temp);</div><div class="line">			<span class="keyword">if</span> (nearestAccept == <span class="number">0</span>)			<span class="comment">//没有可接受字符串，报错</span></div><div class="line">			&#123;</div><div class="line">				<span class="built_in">cout</span> &lt;&lt; <span class="string">"错误:"</span> &lt;&lt; line &lt;&lt; <span class="string">":"</span> &lt;&lt; column &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">				state = <span class="number">-1</span>;</div><div class="line">				getNextChar();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span></div><div class="line">		&#123;					<span class="comment">//字符可行，加入到buffer中，并进行状态转移</span></div><div class="line">			state = i-&gt;second;</div><div class="line">			getNextChar();</div><div class="line">			buffer.push_back(currentChar);</div><div class="line">			pair&lt;<span class="keyword">int</span>, <span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt; &gt; res = dfa.find(state);		</div><div class="line">			i = res.second.find(<span class="string">"&amp;"</span>);</div><div class="line">			<span class="keyword">if</span> (i != res.second.end())			<span class="comment">//判断是否是终结状态</span></div><div class="line">			&#123;</div><div class="line">				nearestAccept = buffer.size();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> buffer;		<span class="comment">//返回Token</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="编写目标语言的正规文法"><a href="#编写目标语言的正规文法" class="headerlink" title="编写目标语言的正规文法"></a>编写目标语言的正规文法</h2><p>我理想中的目标语言是Pascal，所以下面我所写的，是Pascal的词法规则。<br>为了简化程序的编写，我以<code>begin</code>作为NFA的起始状态，<code>&amp;</code>符号作为结束的标志，<code>!</code>作为空白字符。<br>文法的表示方式如下：<br>$A \rightarrow aB$<br>表示为: A a B<br>$A \rightarrow a$<br>表示为: A a </p>
+<h3 id="标识符"><a href="#标识符" class="headerlink" title="标识符"></a>标识符</h3><p>关键字在文法中属于标识符，当确认某个Token为标识符时，还需要到关键字表中验证是否是关键字。<br>在Pascal中，标识符的要求是：</p>
+<ol>
+<li>以字母或下划线开始</li>
+<li>只包含字母、下划线和数字</li>
+<li>长度小于255</li>
+<li>不区分大小写</li>
+</ol>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">begin </span>letter-underline identifier</div><div class="line">identifier letter-<span class="keyword">digit-underline </span>identifier</div><div class="line">identifier &amp;</div></pre></td></tr></table></figure>
+<h3 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h3><p>Pascal中的数字表达还是比较丰富的，包括整数(100)、浮点数(1.2)、科学记数法(10.2e+5)以及十六进制的整数($ae3)。</p>
+<h4 id="整数"><a href="#整数" class="headerlink" title="整数"></a>整数</h4><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">begin +|- <span class="type">integer</span><span class="number">-1</span></div><div class="line">begin digit <span class="type">integer</span></div><div class="line"><span class="type">integer</span><span class="number">-1</span> digit <span class="type">integer</span></div><div class="line"><span class="type">integer</span> digit <span class="type">integer</span></div><div class="line"><span class="type">integer</span> &amp;</div></pre></td></tr></table></figure>
+<h4 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h4><figure class="highlight verilog"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">integer</span> . <span class="keyword">real</span>-<span class="number">1</span></div><div class="line"><span class="keyword">real</span>-<span class="number">1</span> digit <span class="keyword">real</span>	<span class="comment">//保证小数点后一定要有数字</span></div><div class="line"><span class="keyword">real</span> digit <span class="keyword">real</span></div><div class="line"><span class="keyword">real</span> &amp;</div></pre></td></tr></table></figure>
+<h4 id="科学计数法"><a href="#科学计数法" class="headerlink" title="科学计数法"></a>科学计数法</h4><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="type">integer</span> e science<span class="number">-1</span></div><div class="line"><span class="type">integer</span> E science<span class="number">-1</span></div><div class="line">real e science<span class="number">-1</span></div><div class="line">real E science<span class="number">-1</span></div><div class="line">science<span class="number">-1</span> +|- science<span class="number">-2</span>		<span class="comment">//保证e和正负号后面要有数字</span></div><div class="line">science<span class="number">-1</span> digit science</div><div class="line">science<span class="number">-2</span> digit science</div><div class="line">science digit science</div><div class="line">science &amp;</div></pre></td></tr></table></figure>
+<h4 id="十六进制整数"><a href="#十六进制整数" class="headerlink" title="十六进制整数"></a>十六进制整数</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">begin $ X<span class="built_in">integer</span>-1</div><div class="line">X<span class="built_in">integer</span>-1 xdigit X<span class="built_in">integer</span>	//保证$后面要有数字</div><div class="line">X<span class="built_in">integer</span> xdigit X<span class="built_in">integer</span></div><div class="line">X<span class="built_in">integer</span> &amp;</div></pre></td></tr></table></figure>
+<h3 id="字符和字符串"><a href="#字符和字符串" class="headerlink" title="字符和字符串"></a>字符和字符串</h3><p>在Pascal中，字符和字符串都是用单引号括起来的，例如: ‘a’和’abc’。<br>暂时不支持转义符，但是可以通过修改文法，使其支持此功能。</p>
+<h3 id="字符"><a href="#字符" class="headerlink" title="字符"></a>字符</h3><figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">begin ' <span class="built_in">char</span>-<span class="number">1</span></div><div class="line"><span class="built_in">char</span>-<span class="number">1</span> <span class="built_in">char</span> <span class="built_in">char</span>-<span class="number">2</span></div><div class="line"><span class="built_in">char</span>-<span class="number">2</span> ' <span class="built_in">char</span></div><div class="line"><span class="built_in">char</span> &amp;</div></pre></td></tr></table></figure>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">begin ' <span class="type">string</span><span class="number">-1</span></div><div class="line"><span class="type">string</span><span class="number">-1</span> char <span class="type">string</span><span class="number">-1</span></div><div class="line"><span class="type">string</span><span class="number">-1</span> ' <span class="type">string</span></div><div class="line"><span class="type">string</span> &amp;</div></pre></td></tr></table></figure>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>在正常的词法分析其中，注释部分应该是在预处理过程中将其消除的，但是作为一个通用的词法分析器，注释部分必须出现在文法部分中，而不能再预处理过程中处理掉。<br>Pascal中的注释分为行注释和块注释。<br>行注释是<code>(*</code>开头的，以<code>*)</code>结尾的字符，块注释是以<code>{</code>开始的，以<code>}</code>结束的字符。<br><strong>注意</strong>: 注释不遵循最长优先匹配，而是<strong>最短优先匹配</strong>，因此，只要碰到<code>*)</code>或者<code>}</code>，就会停止匹配，并返回。VC++也是这样操作的。</p>
+<h4 id="行注释"><a href="#行注释" class="headerlink" title="行注释"></a>行注释</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">begin</span> ( <span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-1</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-1</span> * <span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-2</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-2</span> <span class="built_in">char</span>-<span class="keyword">no</span>-star <span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-2</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-2</span> * <span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-3</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-3</span> <span class="built_in">char</span>-<span class="keyword">no</span>-<span class="keyword">right</span> <span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-2</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span><span class="number">-3</span> ) <span class="keyword">row</span>-<span class="keyword">comment</span></div><div class="line"><span class="keyword">row</span>-<span class="keyword">comment</span> &amp;</div></pre></td></tr></table></figure>
+<h4 id="块注释"><a href="#块注释" class="headerlink" title="块注释"></a>块注释</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">begin</span> &#123; <span class="keyword">block</span>-<span class="keyword">comment</span><span class="number">-1</span></div><div class="line"><span class="keyword">block</span>-<span class="keyword">comment</span><span class="number">-1</span> <span class="built_in">char</span>-<span class="keyword">no</span>-<span class="keyword">Right</span> <span class="keyword">block</span>-<span class="keyword">comment</span><span class="number">-1</span></div><div class="line"><span class="keyword">block</span>-<span class="keyword">comment</span><span class="number">-1</span> &#125; <span class="keyword">block</span>-<span class="keyword">comment</span></div><div class="line"><span class="keyword">block</span>-<span class="keyword">comment</span> &amp;</div></pre></td></tr></table></figure>
+<h3 id="界符和运算符"><a href="#界符和运算符" class="headerlink" title="界符和运算符"></a>界符和运算符</h3><p>界符和运算符都比较好处理，唯一比较困难的是<code>..</code>这个界符，因为这个符号经常出现在数字后面，如果与前面的数字不加空格等分隔，程序会把第一个<code>.</code>识别成小数点，把后面的<code>.</code>识别成句号。这个问题暂时没有解决，或许可以从语法编写上解决。有知道如何解决的可以告诉我啊~<br><strong>PS</strong>:这个问题已经解决，通过<strong>最长匹配原则</strong>，可以避免这个问题。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">begin</span> : colon</div><div class="line">colon &amp;</div><div class="line"></div><div class="line">colon = assignment</div><div class="line">assignment &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> . <span class="keyword">period</span></div><div class="line"><span class="keyword">period</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">period</span> . duble-<span class="keyword">period</span></div><div class="line">duble-<span class="keyword">period</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> , comma</div><div class="line">comma &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> ; semicolon</div><div class="line">semicolon &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> ^ tip</div><div class="line">tip &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> / <span class="keyword">div</span></div><div class="line"><span class="keyword">div</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> + <span class="keyword">add</span></div><div class="line"><span class="keyword">add</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> - sub</div><div class="line">sub &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> * mul</div><div class="line">mul &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> % <span class="keyword">mod</span></div><div class="line"><span class="keyword">mod</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> = equ</div><div class="line">equ &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> &lt; <span class="keyword">less</span></div><div class="line"><span class="keyword">less</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">less</span> = <span class="keyword">less</span>-equ</div><div class="line"><span class="keyword">less</span>-equ &amp;</div><div class="line"></div><div class="line"><span class="keyword">less</span> &gt; <span class="keyword">not</span>-equ</div><div class="line"><span class="keyword">not</span>-equ &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> &gt; great</div><div class="line">great &amp;</div><div class="line"></div><div class="line">great = great-equ</div><div class="line">great-equ &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> ( <span class="keyword">left</span></div><div class="line"><span class="keyword">left</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> ) <span class="keyword">right</span></div><div class="line"><span class="keyword">right</span> &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> [ <span class="keyword">left</span>-m</div><div class="line"><span class="keyword">left</span>-m &amp;</div><div class="line"></div><div class="line"><span class="keyword">begin</span> ] <span class="keyword">right</span>-m</div><div class="line"><span class="keyword">right</span>-m &amp;</div></pre></td></tr></table></figure></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>词法分析器到这里基本上是写完了，但只实现了基本的功能，具体的报错等附加功能还是比较差，因为在编写过程中，并没有考虑性能问题，所以代码执行效率比较低，特别是NFA转DFA的过程。</p>
+<p>整个项目我已经上传了Git@OSChina，有兴趣的可以去下载下来研究一下。<br>本人水平有限，如果你有更好的想法或者实现方法，我们可以一起讨论。</p>
+<p>项目地址：<a href="http://git.oschina.net/873314461/lexical" target="_blank" rel="external">点击查看</a></p>
+<p>接下来一周要考试，语法部分等我复习完编译原理再写吧。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/lexical/" rel="tag"># lexical</a>
+          
+            <a href="/tags/词法分析器/" rel="tag"># 词法分析器</a>
+          
+            <a href="/tags/有限状态机/" rel="tag"># 有限状态机</a>
+          
+            <a href="/tags/c/" rel="tag"># c++</a>
+          
+            <a href="/tags/NFA/" rel="tag"># NFA</a>
+          
+            <a href="/tags/DFA/" rel="tag"># DFA</a>
+          
+            <a href="/tags/正规式/" rel="tag"># 正规式</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/10/digital-image-processing/" rel="next" title="数字图像处理实验报告">
+                <i class="fa fa-chevron-left"></i> 数字图像处理实验报告
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/03/yeqingsheng01/" rel="prev" title="叶庆生的上机作业01">
+                叶庆生的上机作业01 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/05/01/lexical/"
+     data-title="动手写词法分析器"
+     data-content=""
+     data-url="http://whaoyu.com/2016/05/01/lexical/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/01/lexical/"
+           data-title="动手写词法分析器" data-url="http://whaoyu.com/2016/05/01/lexical/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="浣熊" />
+          <p class="site-author-name" itemprop="name">浣熊</p>
+          <p class="site-description motion-element" itemprop="description">一只宅在窝里的浣熊</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/873314461" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://git.oschina.net/873314461" target="_blank" title="GitOSC">
+                  
+                    <i class="fa fa-fw fa-git"></i>
+                  
+                  GitOSC
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://about.me/whyu" title="About.Me" target="_blank">About.Me</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://izihan.cf/" title="屮主席" target="_blank">屮主席</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.andrewei.info/" title="伟霸" target="_blank">伟霸</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务要求"><span class="nav-number">2.</span> <span class="nav-text">任务要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备资料"><span class="nav-number">3.</span> <span class="nav-text">准备资料</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正规式"><span class="nav-number">3.1.</span> <span class="nav-text">正规式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有穷自动机"><span class="nav-number">3.2.</span> <span class="nav-text">有穷自动机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正规式到NFA"><span class="nav-number">4.</span> <span class="nav-text">正规式到NFA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法描述"><span class="nav-number">4.1.</span> <span class="nav-text">算法描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心代码"><span class="nav-number">4.2.</span> <span class="nav-text">核心代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NFA转DFA"><span class="nav-number">5.</span> <span class="nav-text">NFA转DFA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#转换函数"><span class="nav-number">5.1.</span> <span class="nav-text">转换函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最小集算法"><span class="nav-number">5.2.</span> <span class="nav-text">最小集算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心代码-1"><span class="nav-number">5.3.</span> <span class="nav-text">核心代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用DFA进行词法分析"><span class="nav-number">6.</span> <span class="nav-text">用DFA进行词法分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法说明"><span class="nav-number">6.1.</span> <span class="nav-text">算法说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心代码-2"><span class="nav-number">6.2.</span> <span class="nav-text">核心代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写目标语言的正规文法"><span class="nav-number">7.</span> <span class="nav-text">编写目标语言的正规文法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#标识符"><span class="nav-number">7.1.</span> <span class="nav-text">标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字"><span class="nav-number">7.2.</span> <span class="nav-text">数字</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#整数"><span class="nav-number">7.2.1.</span> <span class="nav-text">整数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浮点数"><span class="nav-number">7.2.2.</span> <span class="nav-text">浮点数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#科学计数法"><span class="nav-number">7.2.3.</span> <span class="nav-text">科学计数法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十六进制整数"><span class="nav-number">7.2.4.</span> <span class="nav-text">十六进制整数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符和字符串"><span class="nav-number">7.3.</span> <span class="nav-text">字符和字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符"><span class="nav-number">7.4.</span> <span class="nav-text">字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串"><span class="nav-number">7.5.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注释"><span class="nav-number">7.6.</span> <span class="nav-text">注释</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行注释"><span class="nav-number">7.6.1.</span> <span class="nav-text">行注释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#块注释"><span class="nav-number">7.6.2.</span> <span class="nav-text">块注释</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#界符和运算符"><span class="nav-number">7.7.</span> <span class="nav-text">界符和运算符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-number">8.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浣熊</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"why8733"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Dqzwal3R9nGVVIWbOxPEjmYx-gzGzoHsz", "pwi1BqPEC844MTxco1ON9NQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>

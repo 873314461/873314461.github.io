@@ -1,0 +1,955 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="des,加密," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="浣熊窝" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言最近上了信息安全课，学了一点东西，感觉还蛮有趣的，在这里记录一下，DES加密算法应该是IBM研制的一种被广泛使用的对称加密算法，在这里，我们只是讨论一下简化的DES算法。
+DES算法流程
+请允许我盗用一下老师的图片，这个流程图还是很清楚的，但是里面的具体什么置换，怎样去置换，就在简化的DES中去讲解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DES加密算法">
+<meta property="og:url" content="http://whaoyu.com/2016/05/24/des/index.html">
+<meta property="og:site_name" content="浣熊窝">
+<meta property="og:description" content="前言最近上了信息安全课，学了一点东西，感觉还蛮有趣的，在这里记录一下，DES加密算法应该是IBM研制的一种被广泛使用的对称加密算法，在这里，我们只是讨论一下简化的DES算法。
+DES算法流程
+请允许我盗用一下老师的图片，这个流程图还是很清楚的，但是里面的具体什么置换，怎样去置换，就在简化的DES中去讲解。">
+<meta property="og:image" content="http://whaoyu.com/2016/05/24/des/1.png">
+<meta property="og:image" content="http://whaoyu.com/2016/05/24/des/2.png">
+<meta property="og:image" content="http://whaoyu.com/2016/05/24/des/3.png">
+<meta property="og:updated_time" content="2017-01-20T09:02:06.959Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DES加密算法">
+<meta name="twitter:description" content="前言最近上了信息安全课，学了一点东西，感觉还蛮有趣的，在这里记录一下，DES加密算法应该是IBM研制的一种被广泛使用的对称加密算法，在这里，我们只是讨论一下简化的DES算法。
+DES算法流程
+请允许我盗用一下老师的图片，这个流程图还是很清楚的，但是里面的具体什么置换，怎样去置换，就在简化的DES中去讲解。">
+<meta name="twitter:image" content="http://whaoyu.com/2016/05/24/des/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6279647023285143000',
+      author: '浣熊'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://whaoyu.com/2016/05/24/des/"/>
+
+
+
+
+
+  <title> DES加密算法 | 浣熊窝 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?2d88a85f453733863177faa20ea0e05b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">浣熊窝</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Hello, world!</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://whaoyu.com/2016/05/24/des/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="浣熊">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/default_avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浣熊窝">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="浣熊窝" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                DES加密算法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-24T10:56:33+08:00">
+                2016-05-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/信息安全/" itemprop="url" rel="index">
+                    <span itemprop="name">信息安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/05/24/des/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/24/des/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/24/des/" class="leancloud_visitors" data-flag-title="DES加密算法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近上了信息安全课，学了一点东西，感觉还蛮有趣的，在这里记录一下，DES加密算法应该是IBM研制的一种被广泛使用的对称加密算法，在这里，我们只是讨论一下<strong>简化</strong>的DES算法。</p>
+<h2 id="DES算法流程"><a href="#DES算法流程" class="headerlink" title="DES算法流程"></a>DES算法流程</h2><p><img src="/2016/05/24/des/1.png" alt=""></p>
+<p>请允许我盗用一下老师的图片，这个流程图还是很清楚的，但是里面的具体什么置换，怎样去置换，就在简化的DES中去讲解。</p>
+<a id="more"></a>
+<p>整个加密过程分为3个阶段：</p>
+<ul>
+<li>第一阶段进行初始置换IP，然后将明文分成两个32bit的字串——L0和R0</li>
+<li>对于L0和R0进行连续的16轮迭代运算</li>
+<li>将迭代后的信息进行逆置换，然后得到输出的密文。其中，逆置换是初始置换的逆运算</li>
+</ul>
+<h2 id="密钥的形成"><a href="#密钥的形成" class="headerlink" title="密钥的形成"></a>密钥的形成</h2><p>对于一个给定的56bit密钥，在真正参与的加密的，其实只有48bit。</p>
+<ul>
+<li>密钥在第一阶段时，进行置换选择PC-1，根据置换选择表，转换成新的密钥，并拆分成两部分——C0和D0</li>
+<li>在第二阶段中，每次对密钥进行循环左移，然后进行置换选择PC-2，得到其中的48bit，但与到加密中。</li>
+</ul>
+<h2 id="初始置换"><a href="#初始置换" class="headerlink" title="初始置换"></a>初始置换</h2><p>初始置换表如下：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="number">58</span>,<span class="number">50</span>,<span class="number">42</span>,<span class="number">34</span>,<span class="number">26</span>,<span class="number">18</span>,<span class="number">10</span>, <span class="number">2</span>,<span class="number">60</span>,<span class="number">52</span>,<span class="number">44</span>,<span class="number">36</span>,<span class="number">28</span>,<span class="number">20</span>,<span class="number">12</span>, <span class="number">4</span>,</div><div class="line"><span class="number">62</span>,<span class="number">54</span>,<span class="number">46</span>,<span class="number">38</span>,<span class="number">30</span>,<span class="number">22</span>,<span class="number">14</span>, <span class="number">6</span>,<span class="number">64</span>,<span class="number">56</span>,<span class="number">48</span>,<span class="number">40</span>,<span class="number">32</span>,<span class="number">24</span>,<span class="number">16</span>, <span class="number">8</span>,</div><div class="line"><span class="number">57</span>,<span class="number">49</span>,<span class="number">41</span>,<span class="number">33</span>,<span class="number">25</span>,<span class="number">17</span>, <span class="number">9</span>, <span class="number">1</span>,<span class="number">59</span>,<span class="number">51</span>,<span class="number">43</span>,<span class="number">35</span>,<span class="number">27</span>,<span class="number">19</span>,<span class="number">11</span>, <span class="number">3</span>,</div><div class="line"><span class="number">61</span>,<span class="number">53</span>,<span class="number">45</span>,<span class="number">37</span>,<span class="number">29</span>,<span class="number">21</span>,<span class="number">13</span>, <span class="number">5</span>,<span class="number">63</span>,<span class="number">55</span>,<span class="number">47</span>,<span class="number">39</span>,<span class="number">31</span>,<span class="number">23</span>,<span class="number">15</span>, <span class="number">7</span>,</div></pre></td></tr></table></figure></p>
+<p>就是把64bit数据的第58位放到第一位，第50位放到第二位，依次类推，最后得到一个新的64bit的数据</p>
+<p>来个简化的样例<br>设原始8bit数据为: 1111 0011<br>IP表为：2,6,3,1,4,8,5,7<br>那么对应的转换后的数据为：1011 1101</p>
+<h2 id="迭代运算"><a href="#迭代运算" class="headerlink" title="迭代运算"></a>迭代运算</h2><p>对于每次迭代运算，都需要经过以下5个步骤：</p>
+<ul>
+<li>扩展置换：将32bit的字串$RE_{i-1}$扩展成48bit的数据</li>
+<li>异或操作：将上一步得到的48bit数据与密钥形成中得到的48bit数据进行异或操作</li>
+<li>选择置换：将异或后得到的48bit数据重新变成32bit</li>
+<li>置换操作：将上一步得到的结果进行置换</li>
+<li>异或操作：将$LE_{i-1}$与上一步得到的数据进行亦或，得到$RE_i$，同时，$LE<em>i=RE</em>{i-1}$</li>
+</ul>
+<p>具体流程图如下：</p>
+<p><img src="/2016/05/24/des/2.png" alt=""></p>
+<h3 id="扩展置换"><a href="#扩展置换" class="headerlink" title="扩展置换"></a>扩展置换</h3><p>跟初始置换一样，根据对应的置换表格，进行置换</p>
+<p>例如4bit -&gt; 8bit置换表格为：4，1，2，3，2，1，4，3<br>对于输入数据：1011<br>输出数据为：1101 0111</p>
+<h3 id="与密钥异或"><a href="#与密钥异或" class="headerlink" title="与密钥异或"></a>与密钥异或</h3><p>异或操作很简单，每一位对其，相同为0， 不同为1，不多解释了</p>
+<h3 id="选择置换"><a href="#选择置换" class="headerlink" title="选择置换"></a>选择置换</h3><p>选择置换又称作S盒，是DES算法中唯一没有公开的一部分，只是给出了输入和输出，具体内部如何实现的，我们不知道。</p>
+<p>简化的S盒如下所示：</p>
+<p><img src="/2016/05/24/des/3.png" alt=""></p>
+<p>在简化的DES算法中，我们使用两个S盒——S0和S1。</p>
+<ol>
+<li>将8bit的数据平均分成两部分，前半部分使用S0， 后半部分使用S1</li>
+<li>对于每一部分（以前半部分为例），设为D3,D2,D1,D0，将D3，D1组成一个二进制数，并转换成十进制数A1， 将D2, D1组成一个二进制数，并转换成十进制数A2</li>
+<li>以A1指定一行，A2指定一列，对应的查找S0盒，得到数据M1，同理，用后半部分查找S1可以得到M2</li>
+<li>将M1,M2合并成一个M，就得到了新的4bit的数据</li>
+</ol>
+<p>例如，S盒如上图，对应的8bit输入数据为：1101 0111<br>前半部分: A1 = 11 -&gt; 3          A2 = 10 -&gt; 2              查表可得 M1 = 1 -&gt; 01<br>后半部分：A1 = 01 -&gt; 1          A2 = 11 -&gt; 3              查表可得 M2 = 3 -&gt; 11<br>所以转换后的数据为：0111</p>
+<h3 id="置换操作"><a href="#置换操作" class="headerlink" title="置换操作"></a>置换操作</h3><p>跟初始置换差不多，不解释了</p>
+<h3 id="异或操作"><a href="#异或操作" class="headerlink" title="异或操作"></a>异或操作</h3><p>应该很简单，也不多解释了</p>
+<h2 id="逆置换"><a href="#逆置换" class="headerlink" title="逆置换"></a>逆置换</h2><p>逆置换是初始置换的逆过程，方法跟初始置换相同。</p>
+<h2 id="关于解密"><a href="#关于解密" class="headerlink" title="关于解密"></a>关于解密</h2><p>DES算法是对称加密方法，对称加密的特点就是加解密过程相同，因此，方法跟加密完全一样，只需要将密文按同样的方法加密，就得到了明文。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/des/" rel="tag"># des</a>
+          
+            <a href="/tags/加密/" rel="tag"># 加密</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/19/learn-ryu01/" rel="next" title="浣熊学RYU01">
+                <i class="fa fa-chevron-left"></i> 浣熊学RYU01
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/24/ssl/" rel="prev" title="搭建HTTPS服务器">
+                搭建HTTPS服务器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/05/24/des/"
+     data-title="DES加密算法"
+     data-content=""
+     data-url="http://whaoyu.com/2016/05/24/des/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/24/des/"
+           data-title="DES加密算法" data-url="http://whaoyu.com/2016/05/24/des/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="浣熊" />
+          <p class="site-author-name" itemprop="name">浣熊</p>
+          <p class="site-description motion-element" itemprop="description">一只宅在窝里的浣熊</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/873314461" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://git.oschina.net/873314461" target="_blank" title="GitOSC">
+                  
+                    <i class="fa fa-fw fa-git"></i>
+                  
+                  GitOSC
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://about.me/whyu" title="About.Me" target="_blank">About.Me</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://izihan.cf/" title="屮主席" target="_blank">屮主席</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.andrewei.info/" title="伟霸" target="_blank">伟霸</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DES算法流程"><span class="nav-number">2.</span> <span class="nav-text">DES算法流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#密钥的形成"><span class="nav-number">3.</span> <span class="nav-text">密钥的形成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始置换"><span class="nav-number">4.</span> <span class="nav-text">初始置换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代运算"><span class="nav-number">5.</span> <span class="nav-text">迭代运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展置换"><span class="nav-number">5.1.</span> <span class="nav-text">扩展置换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与密钥异或"><span class="nav-number">5.2.</span> <span class="nav-text">与密钥异或</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择置换"><span class="nav-number">5.3.</span> <span class="nav-text">选择置换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#置换操作"><span class="nav-number">5.4.</span> <span class="nav-text">置换操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异或操作"><span class="nav-number">5.5.</span> <span class="nav-text">异或操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逆置换"><span class="nav-number">6.</span> <span class="nav-text">逆置换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于解密"><span class="nav-number">7.</span> <span class="nav-text">关于解密</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浣熊</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"why8733"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Dqzwal3R9nGVVIWbOxPEjmYx-gzGzoHsz", "pwi1BqPEC844MTxco1ON9NQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>

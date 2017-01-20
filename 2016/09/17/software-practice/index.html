@@ -1,0 +1,981 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="串口,flask,Python," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="浣熊窝" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="实验目的生产实习软件部分目的是锻炼学生从事开发计算机应用系统的能力和协同工作的能力。使学生初步掌握以SQL Server数据库系统为核心，采用C/S结构的计算机应用系统开发方法（用Delphi语言开发），使学生得到如何进行系统开发的初步锻炼。
+PS:其实，我们并没有使用SQL Server(MySQL)，C/S(B/S)结构和Delphi(Python) ^_^主要是Delphi太过时了。MySQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件实习报告">
+<meta property="og:url" content="http://whaoyu.com/2016/09/17/software-practice/index.html">
+<meta property="og:site_name" content="浣熊窝">
+<meta property="og:description" content="实验目的生产实习软件部分目的是锻炼学生从事开发计算机应用系统的能力和协同工作的能力。使学生初步掌握以SQL Server数据库系统为核心，采用C/S结构的计算机应用系统开发方法（用Delphi语言开发），使学生得到如何进行系统开发的初步锻炼。
+PS:其实，我们并没有使用SQL Server(MySQL)，C/S(B/S)结构和Delphi(Python) ^_^主要是Delphi太过时了。MySQ">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/1.jpg">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/9.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/10.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/7.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/8.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/2.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/3.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/4.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/5.png">
+<meta property="og:image" content="http://whaoyu.com/2016/09/17/software-practice/6.png">
+<meta property="og:updated_time" content="2017-01-20T09:02:07.075Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="软件实习报告">
+<meta name="twitter:description" content="实验目的生产实习软件部分目的是锻炼学生从事开发计算机应用系统的能力和协同工作的能力。使学生初步掌握以SQL Server数据库系统为核心，采用C/S结构的计算机应用系统开发方法（用Delphi语言开发），使学生得到如何进行系统开发的初步锻炼。
+PS:其实，我们并没有使用SQL Server(MySQL)，C/S(B/S)结构和Delphi(Python) ^_^主要是Delphi太过时了。MySQ">
+<meta name="twitter:image" content="http://whaoyu.com/2016/09/17/software-practice/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6279647023285143000',
+      author: '浣熊'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://whaoyu.com/2016/09/17/software-practice/"/>
+
+
+
+
+
+  <title> 软件实习报告 | 浣熊窝 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?2d88a85f453733863177faa20ea0e05b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">浣熊窝</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Hello, world!</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://whaoyu.com/2016/09/17/software-practice/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="浣熊">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/default_avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浣熊窝">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="浣熊窝" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                软件实习报告
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-17T18:16:11+08:00">
+                2016-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/课程设计/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/09/17/software-practice/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/17/software-practice/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/09/17/software-practice/" class="leancloud_visitors" data-flag-title="软件实习报告">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h2><p>生产实习软件部分目的是锻炼学生从事开发计算机应用系统的能力和协同工作的能力。<br>使学生初步掌握以SQL Server数据库系统为核心，采用C/S结构的计算机应用系统开发方法（用Delphi语言开发），<br>使学生得到如何进行系统开发的初步锻炼。</p>
+<p><strong>PS:</strong><br>其实，我们并没有使用SQL Server(MySQL)，C/S(B/S)结构和Delphi(Python) ^_^<br>主要是Delphi太过时了。<br>MySQL是因为有现成的云数据库，就不想搭建了。<br>B/S是因为html比较熟悉，而且Python写客户端，实在是很难看。</p>
+<h2 id="系统结构设计"><a href="#系统结构设计" class="headerlink" title="系统结构设计"></a>系统结构设计</h2><p>整个系统包括四部分，分别是数据库服务器、WEB服务器、传输机和前置机。</p>
+<p><img src="/2016/09/17/software-practice/1.jpg" alt=""></p>
+<h3 id="连接与数据传输"><a href="#连接与数据传输" class="headerlink" title="连接与数据传输"></a>连接与数据传输</h3><p>数据库、WEB服务器与传输机之间使用网线连接，传输机与前置机之间使用串口线连接。</p>
+<p>数据库与WEB服务器之间，使用MySQL的3306端口通讯，通过在数据库中添加远程受限用户，来访问数据库。</p>
+<p>WEB服务器与前置机之间，使用HTTP协议传输数据，用户数据通过JSON封装。</p>
+<p>前置机与传输机之间，用JSON封装数据，以换行符(<code>&#39;\n&#39;</code>)为结束标志。</p>
+<h3 id="刷卡流程"><a href="#刷卡流程" class="headerlink" title="刷卡流程"></a>刷卡流程</h3><ol>
+<li>前置机获取卡号信息，并以字符串的方式发送到传输机。</li>
+<li>传输机将卡号以POST方式，发送到WEB服务器。</li>
+<li>WEB服务器通过卡号，从数据库获取相关信息。</li>
+<li>WEB服务器将卡片信息封装程JSON格式，并返回给传输机。</li>
+<li>传输机将信息通过串口发送给前置机。</li>
+<li>前置机解封数据，并最终显示。</li>
+</ol>
+<a id="more"></a>
+<h3 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h3><figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">root</div><div class="line"><span class="string">|</span></div><div class="line">+-Server	<span class="meta"># WEB服务器代码</span></div><div class="line"><span class="string">|</span></div><div class="line">+-transfer	<span class="meta"># 传输机代码</span></div><div class="line"><span class="string">|</span></div><div class="line">+-front		<span class="meta"># 前置机代码</span></div><div class="line"><span class="string">|</span></div><div class="line">+-database	<span class="meta"># 数据库创建脚本</span></div></pre></td></tr></table></figure>
+<h2 id="各功能模块设计"><a href="#各功能模块设计" class="headerlink" title="各功能模块设计"></a>各功能模块设计</h2><h3 id="WEB服务器"><a href="#WEB服务器" class="headerlink" title="WEB服务器"></a>WEB服务器</h3><p>服务器端使用的是Flask框架，目录结构如下：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">server</div><div class="line">|<span class="string"></span></div><div class="line">+-app</div><div class="line">|<span class="string"> </span>|</div><div class="line">|<span class="string"> +-module	# 数据模型</span></div><div class="line">|<span class="string"> </span>|</div><div class="line">|<span class="string"> +-templates	# 页面模板文件</span></div><div class="line">|<span class="string"> </span>|</div><div class="line">|<span class="string"> +-views.py	# 路由逻辑</span></div><div class="line">|<span class="string"> </span>|</div><div class="line">|<span class="string"> +-__init__.py	# 模块初始化</span></div><div class="line">|</div><div class="line">+-manage.py</div></pre></td></tr></table></figure></p>
+<p>数据库通过flask-sqlalchemy将数据库抽象出来，并且实现数据库表与module之间的自由转换，<br>从而将WEB处理与数据库分离，可以适应各种不同的数据库，如：SQL Server、SQLite等。</p>
+<p>通过CSRF实现防御<code>跨站请求伪造攻击(Cross-Site Request Forgery)</code>，<br>其原理是在表单中插入一个随机的<code>input</code>值，并在表单提交后，对其进行验证。从而防止跨站请求伪造攻击。</p>
+<p>预约界面：<br><img src="/2016/09/17/software-practice/9.png" alt=""></p>
+<p>管理界面：<br><img src="/2016/09/17/software-practice/10.png" alt=""></p>
+<h3 id="传输机"><a href="#传输机" class="headerlink" title="传输机"></a>传输机</h3><p>传输机作为一个简单的传输模块，需要负责将前置机获取的学号通过POST请求发送到服务器，<br>同时在界面显示接收日志，以及是否传输成功。</p>
+<p>传输机还要将服务器返回的内容通过串口发送给前置机，并在界面显示发送日志，以及是否传输成功。</p>
+<p>作为传输机，需要有专门的一个线程负责监听串口的活动。由于Python的线程模块没有专门的停止方法，<br>只能等待线程自己停止。因此，我设置了一个<code>isStop</code>的变量，作为监听线程是否停止的标志。</p>
+<p>由于这个变量被两个线程使用，因此，需要进行一些PV操作。通过Python中的<code>threading.Lock()</code>方法，<br>可以创建一个信号量，用来控制<code>isStop</code>变量的访问。从而解决资源冲突。</p>
+<p>传输机界面：<br><img src="/2016/09/17/software-practice/7.png" alt=""></p>
+<h3 id="前置机"><a href="#前置机" class="headerlink" title="前置机"></a>前置机</h3><p>前置机作为，主要任务是负责获取卡号，并显示必要的信息。因此需要GUI，本次实验使用的GUI模块为Python自带的Tkinter，<br>作为内置模块，操作相对简单，上手比较容易，适合新手学习使用，但是由于没有可视化操作，所以只能用代码实现简单的界面。</p>
+<p>本次主要使用的GUI组件为<code>Label</code>和<code>Button</code>。<code>Label</code>负责在界面显示内容，<code>Button</code>负责与用户交互。</p>
+<p>同样，如果需要更为美观的界面，可以使用<code>wxPython</code>等第三方GUI库。</p>
+<p>由于串口的通讯是由前置机主动发起的，因此，前置机不需要单独的线程去监听串口，只需要在发送之后，立刻转入监听模式，<br>当收到信息后或者超时后，结束监听，回到待刷卡状态。</p>
+<p>当然，为了保证通讯的质量，我们还可以在前置机与传输机、传输机与服务器之间，每隔一段时间，发送特定的报文，<br>用于验证是否处于联机状态，以确保通讯质量。</p>
+<p>如果实验用于生产环境是，还需要对信息进行加密和校验，此处为实验环境，此功能不做考虑。</p>
+<p>前置机界面：<br><img src="/2016/09/17/software-practice/8.png" alt=""></p>
+<h2 id="数据库表结构设计及功能说明"><a href="#数据库表结构设计及功能说明" class="headerlink" title="数据库表结构设计及功能说明"></a>数据库表结构设计及功能说明</h2><h3 id="数据库类型及版本"><a href="#数据库类型及版本" class="headerlink" title="数据库类型及版本"></a>数据库类型及版本</h3><p>本次数据库是部署在阿里云上的MySQL，数据库版本为5.7。</p>
+<p>使用这个数据库的原因是，我在阿里云上一直由一个可用的数据库，延时在20ms之内，速度较快，因此，不想在自己的PC上再安装。</p>
+<p>由于本次实验是与学生相关，因此最好需要一个完整的学生信息数据库。<br>因此本次实验只是挑选了一部分与本实验相关的数据，进行了存储，因此，学生信息只有一张表。</p>
+<h3 id="Admin表"><a href="#Admin表" class="headerlink" title="Admin表"></a>Admin表</h3><p>该表格为后台管理员表格，主要存放管理员的账号及密码。</p>
+<p>在实际生产过程中，密码应密文保存，但在本次试验中，便于调试，使用的明文保存。</p>
+<p>表结构如下：</p>
+<p><img src="/2016/09/17/software-practice/2.png" alt=""></p>
+<h3 id="Computer表"><a href="#Computer表" class="headerlink" title="Computer表"></a>Computer表</h3><p>该表为设备表，用来存放当前学校中，受该系统管理的所有设备信息。</p>
+<p>表结构如下：</p>
+<p><img src="/2016/09/17/software-practice/3.png" alt=""></p>
+<h3 id="Log表"><a href="#Log表" class="headerlink" title="Log表"></a>Log表</h3><p>该表为日志表，主要用于存放所有用户的操作信息，对于删除和修改信息应当更加详细。</p>
+<p>该表格可以在管理员误删信或者修改信息后，用于信息重建。</p>
+<p>表结构如下：</p>
+<p><img src="/2016/09/17/software-practice/4.png" alt=""></p>
+<h3 id="Reservation表"><a href="#Reservation表" class="headerlink" title="Reservation表"></a>Reservation表</h3><p>该表为预约信息表，主要用来存放学生预约信息。</p>
+<p>表结构如下：</p>
+<p><img src="/2016/09/17/software-practice/5.png" alt=""></p>
+<h3 id="StuInfo表"><a href="#StuInfo表" class="headerlink" title="StuInfo表"></a>StuInfo表</h3><p>该表为学生信息表，主要用来存放学生信息。该表应该与学生信息管理系统相关联，以提供完整的学生信息。</p>
+<p>表结构如下：</p>
+<p><img src="/2016/09/17/software-practice/6.png" alt=""></p>
+<h2 id="实验心得"><a href="#实验心得" class="headerlink" title="实验心得"></a>实验心得</h2><h3 id="王浩宇"><a href="#王浩宇" class="headerlink" title="王浩宇"></a>王浩宇</h3><p>在本次试验中，我作为项目负责人，使用自顶向下的方法，设计了整个系统，虽然整个系统的扩展性并不好，稳定性也可能存在不少问题，但是，这次实验让我对软件设计有了更深入的了解。主动尝试了软件工程中的<code>桩</code>，将本应该只能在机房编写代码，通过增加桩，可以使不需要串口功能的模块在宿舍也可以编写，提高了工作效率。</p>
+<p>这次实验使用Git最为代码的版本管理，可以方便的进行多人合作变成，每个人创建自己的开发分支，完成既定功能后，合入master分支中，不会出现一个人写代码，4个人旁边看着的情况。每个人都可以在自己的电脑上完成自己的工作，然后push到云上，这也是未来工作的模式。</p>
+<p>这次实验中又一次使用了轻量级的Python Web框架——flask。并且又在这个基础上，增加了一下之前没有用过的功能，加深了对flask的理解。同时，在网上查找了关于web框架的资料，了解了web框架的基本原理。</p>
+<h3 id="余一帆"><a href="#余一帆" class="headerlink" title="余一帆"></a>余一帆</h3><p>这次这个学生管理及上机及考勤系统的实验，加深了几台PC机是怎样协同工作是什么原理的理解。平常上课都是单独学习网页设计、数据库等，现在一下子完成一个简单的系统的操作，让我对整个过程的理解更加深入。</p>
+<p>我们这次比较特殊的是我们用了python,而且为了共享代码还用了码云，这些对我来说都是比较陌生的东西。刚开始的时候为了把代码push到码云就花了不少时间，其他的我主要写前段这些，通过上网查资料和问组员倒是还好。</p>
+<p>在这个实验中，不仅培养了独立思考、动手操作的能力，在各种其它能力上也都有了提高。更重要的是，在此次实验课中，我们把抽象的书本上的知识变成自己的。而这是日后最实用的，真的是受益匪浅。但是学习无止境，我们得不断的学习、实践，再学习、再实践。</p>
+<h3 id="朱依凡"><a href="#朱依凡" class="headerlink" title="朱依凡"></a>朱依凡</h3><p>这次软件课程设计我和何颖婕一起跟着王浩宇设计前端部分，这次软件课设接触了新的语言python，我们花了一点时间来学习这个新的语言，我主要负责利用gui库tkinter来布置前端界面，刚开始以为会很困难，但是看了教程和请教了同学之后发现并没有想象中的困难，一步步都逐渐解决了问题，同时这次还接触到了git，熟悉了git的基本操作，刚开始学习git的时候觉得操作步骤很繁琐，但是到后来就发现它的基本操作并不多，熟悉了之后就非常方便，为我们提供了很大的便利。这次课设我感觉学到了很多新的知识，接触了新的语言python，新的版本控制系统github，我受益匪浅。</p>
+<h3 id="左智文"><a href="#左智文" class="headerlink" title="左智文"></a>左智文</h3><p>通过这次的生产实习串口通讯部分的实践，不仅学会了使用git进行多人协作项目，而且应用了python 的一个轻量级的web框架flask，熟练了对于web前端的使用，感觉受益匪浅。</p>
+<h3 id="何颖婕"><a href="#何颖婕" class="headerlink" title="何颖婕"></a>何颖婕</h3><p>在本次试验中，我主要是负责端页面的设计和编码，在组长的指导下完成实验的这个过程。在实验的过程中有很多困难，但在组员的团结合作下，以及上网或者在图书馆查阅资料都一一的克服了。看到自己的心血能运转起来，真的很开心，也通过这次实验学到了很多东西。在系统的设计上，大家一起思考，虽然整个系统的扩展性有待加强，功能也不是特别全面，但通过这次实验让我们对软件设计有了更深入的了解。</p>
+<p>在实验的过程中，因为是团队写代码，实验使用Git代码管理的软件，让每个人的工作内容更加的明确，也使代码的编写更加的方便。在实验中，我们的代码的主要语言是Python, Python是一种简约语言，开发快，语言简洁。因为是一个相对而言，不那么复杂的系统，所以Python还是为我们提供了极大的便利。在这次实验中，使用了之前没有接触的Git和Python，对这些语言又有了新的了解。作为一个计算机专业的学生我觉得接触新的语言是很有必要的，会让我们从不同的角度去思考问题，比较各种语言的优缺点。通过这次实验，也让我体会到了，团队合作编写系统是一个怎样的过程，大家齐心协力为一个目标而努力的感觉真的很棒。希望自己将来走上工作岗位的时候，能继续享受工作带给我的成就感。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>项目代码：<a href="http://git.oschina.net/873314461/SchoolNet" target="_blank" rel="external">http://git.oschina.net/873314461/SchoolNet</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/串口/" rel="tag"># 串口</a>
+          
+            <a href="/tags/flask/" rel="tag"># flask</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/04/SRTP-research-contents/" rel="next" title="科研训练 研究内容">
+                <i class="fa fa-chevron-left"></i> 科研训练 研究内容
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/21/emap-upload-file/" rel="prev" title="EMAP上传附件">
+                EMAP上传附件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/09/17/software-practice/"
+     data-title="软件实习报告"
+     data-content=""
+     data-url="http://whaoyu.com/2016/09/17/software-practice/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/17/software-practice/"
+           data-title="软件实习报告" data-url="http://whaoyu.com/2016/09/17/software-practice/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="浣熊" />
+          <p class="site-author-name" itemprop="name">浣熊</p>
+          <p class="site-description motion-element" itemprop="description">一只宅在窝里的浣熊</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/873314461" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://git.oschina.net/873314461" target="_blank" title="GitOSC">
+                  
+                    <i class="fa fa-fw fa-git"></i>
+                  
+                  GitOSC
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://about.me/whyu" title="About.Me" target="_blank">About.Me</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://izihan.cf/" title="屮主席" target="_blank">屮主席</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.andrewei.info/" title="伟霸" target="_blank">伟霸</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实验目的"><span class="nav-number">1.</span> <span class="nav-text">实验目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统结构设计"><span class="nav-number">2.</span> <span class="nav-text">系统结构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接与数据传输"><span class="nav-number">2.1.</span> <span class="nav-text">连接与数据传输</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#刷卡流程"><span class="nav-number">2.2.</span> <span class="nav-text">刷卡流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码结构"><span class="nav-number">2.3.</span> <span class="nav-text">代码结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#各功能模块设计"><span class="nav-number">3.</span> <span class="nav-text">各功能模块设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WEB服务器"><span class="nav-number">3.1.</span> <span class="nav-text">WEB服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传输机"><span class="nav-number">3.2.</span> <span class="nav-text">传输机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前置机"><span class="nav-number">3.3.</span> <span class="nav-text">前置机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库表结构设计及功能说明"><span class="nav-number">4.</span> <span class="nav-text">数据库表结构设计及功能说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库类型及版本"><span class="nav-number">4.1.</span> <span class="nav-text">数据库类型及版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Admin表"><span class="nav-number">4.2.</span> <span class="nav-text">Admin表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Computer表"><span class="nav-number">4.3.</span> <span class="nav-text">Computer表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log表"><span class="nav-number">4.4.</span> <span class="nav-text">Log表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reservation表"><span class="nav-number">4.5.</span> <span class="nav-text">Reservation表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StuInfo表"><span class="nav-number">4.6.</span> <span class="nav-text">StuInfo表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验心得"><span class="nav-number">5.</span> <span class="nav-text">实验心得</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#王浩宇"><span class="nav-number">5.1.</span> <span class="nav-text">王浩宇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#余一帆"><span class="nav-number">5.2.</span> <span class="nav-text">余一帆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#朱依凡"><span class="nav-number">5.3.</span> <span class="nav-text">朱依凡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#左智文"><span class="nav-number">5.4.</span> <span class="nav-text">左智文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#何颖婕"><span class="nav-number">5.5.</span> <span class="nav-text">何颖婕</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-number">6.</span> <span class="nav-text">附录</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浣熊</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"why8733"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Dqzwal3R9nGVVIWbOxPEjmYx-gzGzoHsz", "pwi1BqPEC844MTxco1ON9NQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,941 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="语法分析器,parser,Python,LR(1)," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="浣熊窝" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言本来这篇文章打算考试完之后写的，但是我懒了一下，就等到了答辩结束。
+这次我用的Python写的，主要是以前只是用过Python，但是没有它做过项目，这次就用Python来试一下。感觉用Python开发还是蛮舒服的，短小精悍的代码，还有跨平台。
+任务要求Create a phaser analysis program, which uses LL(1) method, Operator prec">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手写语法分析器">
+<meta property="og:url" content="http://whaoyu.com/2016/05/27/parser/index.html">
+<meta property="og:site_name" content="浣熊窝">
+<meta property="og:description" content="前言本来这篇文章打算考试完之后写的，但是我懒了一下，就等到了答辩结束。
+这次我用的Python写的，主要是以前只是用过Python，但是没有它做过项目，这次就用Python来试一下。感觉用Python开发还是蛮舒服的，短小精悍的代码，还有跨平台。
+任务要求Create a phaser analysis program, which uses LL(1) method, Operator prec">
+<meta property="og:updated_time" content="2017-01-20T09:02:07.059Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动手写语法分析器">
+<meta name="twitter:description" content="前言本来这篇文章打算考试完之后写的，但是我懒了一下，就等到了答辩结束。
+这次我用的Python写的，主要是以前只是用过Python，但是没有它做过项目，这次就用Python来试一下。感觉用Python开发还是蛮舒服的，短小精悍的代码，还有跨平台。
+任务要求Create a phaser analysis program, which uses LL(1) method, Operator prec">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6279647023285143000',
+      author: '浣熊'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://whaoyu.com/2016/05/27/parser/"/>
+
+
+
+
+
+  <title> 动手写语法分析器 | 浣熊窝 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?2d88a85f453733863177faa20ea0e05b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">浣熊窝</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Hello, world!</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://whaoyu.com/2016/05/27/parser/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="浣熊">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/default_avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浣熊窝">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="浣熊窝" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                动手写语法分析器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-27T12:04:46+08:00">
+                2016-05-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/课程设计/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/05/27/parser/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/parser/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/27/parser/" class="leancloud_visitors" data-flag-title="动手写语法分析器">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本来这篇文章打算考试完之后写的，但是我懒了一下，就等到了答辩结束。</p>
+<p>这次我用的Python写的，主要是以前只是用过Python，但是没有它做过项目，这次就用Python来试一下。感觉用Python开发还是蛮舒服的，短小精悍的代码，还有跨平台。</p>
+<h2 id="任务要求"><a href="#任务要求" class="headerlink" title="任务要求"></a>任务要求</h2><p>Create a phaser analysis program, which uses LL(1) method, Operator precedence analyzing or LR(1) method.<br>The inputs of the program are a text document including a set of productions of the 2º grammar (context free grammar) and the token table generated by Task 1. The out of the program is YES or NO. i.e., the source code string accords with this 2º grammar or the source code string doesn’t accord with this 2º grammar.</p>
+<p>要求是用LL(1)或者LR(1)方法，这次读入的是2型文法（词法分析器是3型文法），也就是上下文无关文法。<br>源代码符合输入的文法，就输出YES，否则就输出NO，并给出错误的位置。</p>
+<h2 id="任务分析"><a href="#任务分析" class="headerlink" title="任务分析"></a>任务分析</h2><p>在语法分析中，主要完成以下几个操作：</p>
+<ul>
+<li>First函数：用来求解FIRST集</li>
+<li>Closure函数：用来求解某个项目的闭包</li>
+<li>Go函数：将LR(1)的小圆点向后移动一位</li>
+<li>GetItemSet函数：用来根据一个项目集和一个符号(终结符或非终结符)生成另一个项目集</li>
+<li>MakeTable函数：用来生成ACTION表和GOTO表</li>
+</ul>
+<p>其实这几个函数，在课本中都有叙述，你只需要将课本上用文字描述的语言转换成C++、Java或Python就可以了。下面就一个一个的看看这些函数怎么转换。</p>
+<a id="more"></a>
+<h3 id="First函数"><a href="#First函数" class="headerlink" title="First函数"></a>First函数</h3><p>LR(1)使用FIRST集作为向前搜索符号集，取代了SLR(1)中的FOLLOW集。<br>First集的求解方法是在LL(1)中讲到的。<br>$$FIRST(\alpha)=\lbrace\alpha|\alpha\buildrel*\over\Rightarrow\alpha\beta,\alpha\in V_T,\alpha,\beta\in V^*\rbrace$$<br>其实简单来说，$FIRST(\alpha)$就是求的$\alpha$可以推导出的句子的第一个终结符，当$\alpha\buildrel*\over\Rightarrow\epsilon$，则规定$\epsilon\in FIRST(\alpha)$。<br>因此，当$\alpha\buildrel*\over\Rightarrow\epsilon$时，$FIRST(\alpha\beta)=FIRST(\beta)$<br>因此，<strong>FIRST函数相当于一个DFS</strong>，但是注意要<strong>标记</strong>走过的路径，否则可能无限递归到爆栈。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># items是一个list，例如：['E','+', 'T']</span></div><div class="line"><span class="comment"># visit是一个空set，用来标记走过的路径</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">first</span><span class="params">(self, items, visit)</span>:</span></div><div class="line">	<span class="comment"># 求First集</span></div><div class="line">	res = []</div><div class="line">	<span class="keyword">if</span> items[<span class="number">0</span>] <span class="keyword">in</span> visit:		<span class="comment"># item为空</span></div><div class="line">		<span class="keyword">return</span> (res, <span class="keyword">False</span>)</div><div class="line">	empty = <span class="keyword">True</span>				<span class="comment"># empty标记子节点是否为空</span></div><div class="line">	<span class="keyword">for</span> item <span class="keyword">in</span> items:</div><div class="line">		<span class="keyword">if</span> empty == <span class="keyword">False</span>:</div><div class="line">			<span class="keyword">return</span> (res, <span class="keyword">False</span>)</div><div class="line">		<span class="keyword">if</span> item <span class="keyword">not</span> <span class="keyword">in</span> self.vn:		<span class="comment"># 当前字符为终结符时，结束搜索</span></div><div class="line">			res.append(item)</div><div class="line">			<span class="keyword">return</span> (res, <span class="keyword">False</span>)</div><div class="line">		empty = <span class="keyword">False</span></div><div class="line">		<span class="keyword">for</span> der <span class="keyword">in</span> self.grammar[item]:	<span class="comment"># 访问子节点</span></div><div class="line">			<span class="keyword">if</span> len(der) == <span class="number">0</span>:		<span class="comment"># 判空</span></div><div class="line">				empty = <span class="keyword">True</span></div><div class="line">				<span class="keyword">continue</span></div><div class="line">			visit.add(item)			<span class="comment"># 标记访问</span></div><div class="line">			(ans, flag) = self.first(der, visit)	<span class="comment"># 访问子节点</span></div><div class="line">			res += ans</div><div class="line">			temp = set(res)</div><div class="line">			res = list(temp)</div><div class="line">			visit.remove(item)</div><div class="line">			<span class="keyword">if</span> flag == <span class="keyword">True</span>:</div><div class="line">				empty = <span class="keyword">True</span></div><div class="line">	<span class="keyword">return</span> (res, empty)	<span class="comment"># 返回first集，并返回是否为空</span></div></pre></td></tr></table></figure>
+<h3 id="Closure函数"><a href="#Closure函数" class="headerlink" title="Closure函数"></a>Closure函数</h3><p>闭包定义：</p>
+<ol>
+<li>假定$I$是一个项目集，$I$的任何项目都属于$Closure(I)$</li>
+<li>若有项目$A\Rightarrow\alpha∙B\beta, \alpha$，属于$Closure(I)$，$B\Rightarrow\gamma$是文法中的产生式，$\beta\in V^*$，$b\in FIRST(\beta\alpha)$，则$B\Rightarrow∙\gamma, b$<br>在这里，我的Closure函数并没有计算一个项目集的闭包，而是计算的单个项目的闭包，对于整个项目集的操作，我放到了<a href="#GetItemSet函数">GetItemSet</a>这个函数中</li>
+</ol>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># derivation表示一个项目 &#123;'data':('E', 'E', '+', 'T',), 'pointPosition':1, 'flag':firstSet&#125;</span></div><div class="line"><span class="comment"># visit为一个空set，用来标记是否已经加入闭包</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">closer</span><span class="params">(self, derivation, visit)</span>:</span></div><div class="line">	<span class="comment"># 获得从一个项目获得一串新的项目</span></div><div class="line">	res = []</div><div class="line">	<span class="comment"># 空项目集  已经加入项目集    不需要求闭包</span></div><div class="line">	<span class="keyword">if</span> len(derivation) == <span class="number">0</span> <span class="keyword">or</span> \</div><div class="line">		len(derivation[<span class="string">'data'</span>]) == <span class="number">0</span> <span class="keyword">or</span> \</div><div class="line">		hash(derivation[<span class="string">'data'</span>]) <span class="keyword">in</span> visit :</div><div class="line">		<span class="keyword">return</span> res</div><div class="line">		id = self.getItemHash(derivation)		<span class="comment"># 将自己加入闭包中</span></div><div class="line">	<span class="keyword">if</span> id <span class="keyword">not</span> <span class="keyword">in</span> visit:</div><div class="line">		visit.add(id)</div><div class="line">		res.append(derivation)</div><div class="line">			</div><div class="line">	<span class="keyword">if</span> len(derivation[<span class="string">'data'</span>]) &lt;= derivation[<span class="string">'pointPosition'</span>]: </div><div class="line">		<span class="keyword">return</span> res  <span class="comment"># 小圆点在最后的 返回自身</span></div><div class="line">	</div><div class="line">	<span class="keyword">if</span> derivation[<span class="string">'data'</span>][derivation[<span class="string">'pointPosition'</span>]] <span class="keyword">in</span> self.vn:</div><div class="line">		<span class="keyword">for</span> item <span class="keyword">in</span> self.grammar[derivation[<span class="string">'data'</span>][derivation[<span class="string">'pointPosition'</span>]]]:</div><div class="line">			newItem = [derivation[<span class="string">'data'</span>][derivation[<span class="string">'pointPosition'</span>]]] + list(item)</div><div class="line">			firstSet = []</div><div class="line">			<span class="keyword">for</span> flag <span class="keyword">in</span> derivation[<span class="string">'flag'</span>]:		<span class="comment"># 对每一个向前搜索符组成的子句进行first集求解</span></div><div class="line">				firstSet += self.first(tuple(list(derivation[<span class="string">'data'</span>][derivation[<span class="string">'pointPosition'</span>] + <span class="number">1</span>:]) + [flag]), set())[<span class="number">0</span>]</div><div class="line">			firstSet = set(firstSet)</div><div class="line">			firstSet = list(firstSet)</div><div class="line">			item = &#123;</div><div class="line">				<span class="string">'data'</span>:tuple(newItem),</div><div class="line">				<span class="string">'pointPosition'</span>:<span class="number">1</span>,</div><div class="line">				<span class="string">'flag'</span>:firstSet</div><div class="line">			&#125;</div><div class="line">			id = self.getItemHash(item)</div><div class="line">			newRes = []</div><div class="line">			<span class="keyword">if</span> id <span class="keyword">not</span> <span class="keyword">in</span> visit:		<span class="comment"># 判断是否已经加入了闭包中</span></div><div class="line">				visit.add(id)</div><div class="line">				res.append(item)</div><div class="line">				newRes = self.closer(item, visit)</div><div class="line">			res += newRes</div><div class="line">	<span class="keyword">return</span> res</div></pre></td></tr></table></figure>
+<h3 id="GO函数"><a href="#GO函数" class="headerlink" title="GO函数"></a>GO函数</h3><p>Go操作就是将一个项目集的所有小圆点向后移动一位(如果小圆点不在最后面的话)。<br>具体定义如下：<br>$GO(I, X)=CLOSURE(J)$<br>其中，$I$是LR(1)中的项目集，$X$是文法符号(终结符和非终结符)。<br>$J=\{任何形如[A\Rightarrow\alpha X∙\beta, \alpha]的项目|[A\Rightarrow\alpha∙X\beta, \alpha\in I\}$<br>文法的初始项目集为$[S’\Rightarrow∙S, \#]$，然后由初始项目集通过闭包函数和转移函数，生成所有的项目集。<br><figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">go</span><span class="params">(self, item, v)</span>:</span></div><div class="line">	<span class="comment"># 圆点后移一位</span></div><div class="line">	item = copy.copy(item)		<span class="comment"># 由于Python的原因，list和dic作为参数，都是传递的引用，因此要在这里进行copy</span></div><div class="line">	res = []</div><div class="line">	<span class="keyword">if</span> item[<span class="string">'pointPosition'</span>] &lt; len(item[<span class="string">'data'</span>]):		<span class="comment"># 小圆点不再最后</span></div><div class="line">		<span class="keyword">if</span> item[<span class="string">'data'</span>][item[<span class="string">'pointPosition'</span>]] != v:	</div><div class="line">			<span class="keyword">return</span> res									<span class="comment"># 不符合转移条件</span></div><div class="line">		item[<span class="string">'pointPosition'</span>] += <span class="number">1</span></div><div class="line">		newItems = self.closer(item, set())</div><div class="line">		res += newItems</div><div class="line">	<span class="keyword">return</span> res</div></pre></td></tr></table></figure></p>
+<h3 id="GetItemSet函数"><a href="#GetItemSet函数" class="headerlink" title="GetItemSet函数"></a>GetItemSet函数</h3><p>GetItemSet就是对一个项目集的所有项目，做一个转移和闭包操作(闭包操作在GO函数中)。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getItemSet</span><span class="params">(self, items, v)</span>:</span></div><div class="line">	newItems = []</div><div class="line">	<span class="keyword">for</span> item <span class="keyword">in</span> items:</div><div class="line">		newItems += self.go(item, v)</div><div class="line">	<span class="keyword">return</span> newItems</div></pre></td></tr></table></figure>
+<h3 id="MakeTable函数"><a href="#MakeTable函数" class="headerlink" title="MakeTable函数"></a>MakeTable函数</h3><p>通过这个函数来生成Action表和Goto表，程序很长，但是并不复杂</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">makeTable</span><span class="params">(self)</span>:</span></div><div class="line">	<span class="comment"># 生成项目集 ACTION表 GOTO表</span></div><div class="line">	self.grammar.setdefault(<span class="string">'begin-1'</span>, [(self.begin,)])</div><div class="line">	</div><div class="line">	<span class="comment"># 给推导式编号</span></div><div class="line">	<span class="keyword">for</span> vn, exp <span class="keyword">in</span> self.grammar.items():</div><div class="line">		<span class="keyword">for</span> item <span class="keyword">in</span> exp :</div><div class="line">			temp = [vn]</div><div class="line">			temp += list(item)</div><div class="line">			self.hashSet.setdefault(hash(tuple(temp)), tuple(temp))		<span class="comment"># 通过其哈希值，直接作为其编号</span></div><div class="line">	</div><div class="line">	<span class="comment"># 构造初始项目集</span></div><div class="line">	initItem = &#123;</div><div class="line">		<span class="string">'data'</span>:(<span class="string">'begin-1'</span>, self.begin),</div><div class="line">		<span class="string">'pointPosition'</span>:<span class="number">1</span>,</div><div class="line">		<span class="string">'flag'</span>:[<span class="string">'$end'</span>]</div><div class="line">	&#125;	</div><div class="line">	initItemSet = &#123;</div><div class="line">		<span class="string">'id'</span>:self.getItemSetHash(self.closer(initItem, set())),</div><div class="line">		<span class="string">'data'</span>:self.closer(initItem, set())</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment"># 获取ACC标志</span></div><div class="line">	self.accflag = hash(initItem[<span class="string">'data'</span>])</div><div class="line">	</div><div class="line">	<span class="comment"># 获取语法分析的初始状态</span></div><div class="line">	self.parserBegin = initItemSet[<span class="string">'id'</span>]</div><div class="line">	</div><div class="line">	self.c = []		<span class="comment"># c用来存放所有的项目集</span></div><div class="line">	self.c.append(initItemSet)</div><div class="line">	</div><div class="line">	visit = set() 	<span class="comment"># 判断项目集是否重复</span></div><div class="line">	visit.add(initItemSet[<span class="string">'id'</span>])</div><div class="line">	<span class="keyword">for</span> items <span class="keyword">in</span> self.c:</div><div class="line">		<span class="keyword">for</span> v <span class="keyword">in</span> self.v:</div><div class="line">			res = self.getItemSet(items[<span class="string">'data'</span>], v)</div><div class="line">			<span class="keyword">if</span> len(res) == <span class="number">0</span>:		<span class="comment"># 生成了空项目集</span></div><div class="line">				<span class="keyword">continue</span></div><div class="line">				</div><div class="line">			newItemSet = &#123;</div><div class="line">				<span class="string">'id'</span>:self.getItemSetHash(res),</div><div class="line">				<span class="string">'data'</span>:res</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			<span class="comment"># 构造GOTO表</span></div><div class="line">			<span class="keyword">if</span> v <span class="keyword">in</span> self.vn:</div><div class="line">				self.goto.setdefault(items[<span class="string">'id'</span>], &#123;&#125;)</div><div class="line">				self.goto[items[<span class="string">'id'</span>]].setdefault(v, newItemSet[<span class="string">'id'</span>])</div><div class="line">				</div><div class="line">			<span class="comment"># 构造部分ACTION表  状态转移，用flag=s区分</span></div><div class="line">			<span class="keyword">if</span> v <span class="keyword">not</span> <span class="keyword">in</span> self.vn:</div><div class="line">				self.action.setdefault(items[<span class="string">'id'</span>], &#123;&#125;)</div><div class="line">				self.action[items[<span class="string">'id'</span>]].setdefault(v, &#123;&#125;)</div><div class="line">				self.action[items[<span class="string">'id'</span>]][v] = &#123;</div><div class="line">					<span class="string">'flag'</span>:<span class="string">'s'</span>,	</div><div class="line">					<span class="string">'data'</span>:newItemSet[<span class="string">'id'</span>]</div><div class="line">				&#125;</div><div class="line">				</div><div class="line">				</div><div class="line">			<span class="keyword">if</span>  newItemSet[<span class="string">'id'</span>] <span class="keyword">not</span> <span class="keyword">in</span> visit:</div><div class="line">				visit.add(newItemSet[<span class="string">'id'</span>])</div><div class="line">				self.c.append(newItemSet)</div><div class="line">	</div><div class="line">	<span class="comment"># 构造ACTION表  归约，用flag=r区分</span></div><div class="line">	<span class="keyword">for</span> itemSet <span class="keyword">in</span> self.c:</div><div class="line">		<span class="keyword">for</span> item <span class="keyword">in</span> itemSet[<span class="string">'data'</span>]:</div><div class="line">			<span class="keyword">if</span> item[<span class="string">'pointPosition'</span>] &gt;= len(item[<span class="string">'data'</span>]):</div><div class="line">				id = hash(item[<span class="string">'data'</span>])</div><div class="line">				self.action.setdefault(itemSet[<span class="string">'id'</span>], &#123;&#125;)</div><div class="line">				<span class="keyword">for</span> v <span class="keyword">in</span> item[<span class="string">'flag'</span>]:</div><div class="line">					self.action[itemSet[<span class="string">'id'</span>]].setdefault(v, &#123;&#125;)</div><div class="line">					self.action[itemSet[<span class="string">'id'</span>]][v] = &#123;</div><div class="line">						<span class="string">'flag'</span>:<span class="string">'r'</span>,</div><div class="line">						<span class="string">'data'</span>:id</div><div class="line">					&#125;</div></pre></td></tr></table></figure>
+<h2 id="语法分析过程"><a href="#语法分析过程" class="headerlink" title="语法分析过程"></a>语法分析过程</h2><p>分析过程跟课本上说的一样，构造状态栈、符号栈，通过Action表和GOTO表进行状态转移和归约。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">parser</span><span class="params">(self)</span>:</span></div><div class="line">	<span class="comment"># 进行语法分析</span></div><div class="line">	self.makeTable()</div><div class="line">	<span class="comment"># 初始化</span></div><div class="line">	signal = []		<span class="comment"># 符号栈</span></div><div class="line">	stateStack = []	<span class="comment"># 状态栈</span></div><div class="line">	stateStack.append(self.parserBegin)</div><div class="line">	</div><div class="line">	self.tokens.append([<span class="number">0</span>, <span class="number">0</span>, <span class="string">'$end'</span>, <span class="string">'EOF'</span>])</div><div class="line">	</div><div class="line">	<span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">		token = self.tokens[<span class="number">0</span>][<span class="number">2</span>]</div><div class="line">		<span class="keyword">if</span> token == <span class="string">'$end'</span> <span class="keyword">and</span> signal[<span class="number">-1</span>] == self.begin:	<span class="comment"># 结束标志</span></div><div class="line">			<span class="keyword">break</span></div><div class="line">		<span class="keyword">if</span> token <span class="keyword">in</span> self.action[stateStack[<span class="number">-1</span>]].keys():</div><div class="line">			thisAction = self.action[stateStack[<span class="number">-1</span>]][token]</div><div class="line">			</div><div class="line">			<span class="comment"># 对可归约状态进行归约</span></div><div class="line">			<span class="keyword">if</span> thisAction[<span class="string">'flag'</span>] == <span class="string">'r'</span> <span class="keyword">and</span> thisAction[<span class="string">'data'</span>] != self.accflag:</div><div class="line">				length = len(self.hashSet[thisAction[<span class="string">'data'</span>]]) - <span class="number">1</span> 		<span class="comment"># 获取回退步数</span></div><div class="line">				<span class="keyword">if</span> length != <span class="number">0</span>:</div><div class="line">					stateStack = stateStack[<span class="number">0</span>:-length]</div><div class="line">				token = self.hashSet[thisAction[<span class="string">'data'</span>]][<span class="number">0</span>]</div><div class="line">				<span class="keyword">if</span> token <span class="keyword">in</span> self.goto[stateStack[<span class="number">-1</span>]].keys():</div><div class="line">					thisGoto = self.goto[stateStack[<span class="number">-1</span>]][token]</div><div class="line">				stateStack.append(thisGoto)</div><div class="line">				<span class="keyword">if</span> length != <span class="number">0</span>:</div><div class="line">					signal = signal[<span class="number">0</span>:-length]</div><div class="line">				signal.append(token)</div><div class="line">			<span class="keyword">else</span>:</div><div class="line">				signal.append(token)</div><div class="line">				self.tokens.pop(<span class="number">0</span>)</div><div class="line">				stateStack.append(thisAction[<span class="string">'data'</span>])</div><div class="line">			</div><div class="line">		<span class="keyword">else</span>:		<span class="comment"># 没有可转移的状态，不符合语法规范</span></div><div class="line">			<span class="keyword">print</span> <span class="string">"Error:%s:%s %s"</span> %(self.tokens[<span class="number">0</span>][<span class="number">0</span>], self.tokens[<span class="number">0</span>][<span class="number">1</span>], self.tokens[<span class="number">0</span>][<span class="number">3</span>])</div><div class="line">			<span class="keyword">break</span></div><div class="line">	<span class="keyword">if</span> signal[<span class="number">-1</span>] == self.begin:</div><div class="line">		<span class="keyword">return</span> <span class="keyword">True</span></div><div class="line">	<span class="keyword">else</span>:</div><div class="line">		<span class="keyword">return</span> <span class="keyword">False</span></div></pre></td></tr></table></figure>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>整个语法分析最复杂的，感觉是闭包函数和First函数，需要递归操作，经常无限递归，然后程序就死了。其次就是第一次写完程序运行时，发现程序的运行速度太慢了！通过做性能分析，发现是<code>copy.deepcopy</code>函数的原因，果断放弃，换了<code>copy.copy</code>。<br>还有就是，深入了解了一下Python的参数传递的方式。</p>
+<p>整个项目的源码在这里：<a href="http://git.oschina.net/873314461/parser" target="_blank" rel="external">点击查看</a></p>
+<p>这个项目里不仅仅有语法分析程序，还有词法分析程序，主要是因为要统一语言，所以我把上次的词法分析器又重写了一边。。。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/语法分析器/" rel="tag"># 语法分析器</a>
+          
+            <a href="/tags/parser/" rel="tag"># parser</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/LR-1/" rel="tag"># LR(1)</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/24/ssl/" rel="next" title="搭建HTTPS服务器">
+                <i class="fa fa-chevron-left"></i> 搭建HTTPS服务器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/11/huawei/" rel="prev" title="华为实习日志">
+                华为实习日志 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/05/27/parser/"
+     data-title="动手写语法分析器"
+     data-content=""
+     data-url="http://whaoyu.com/2016/05/27/parser/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/27/parser/"
+           data-title="动手写语法分析器" data-url="http://whaoyu.com/2016/05/27/parser/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="浣熊" />
+          <p class="site-author-name" itemprop="name">浣熊</p>
+          <p class="site-description motion-element" itemprop="description">一只宅在窝里的浣熊</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/873314461" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://git.oschina.net/873314461" target="_blank" title="GitOSC">
+                  
+                    <i class="fa fa-fw fa-git"></i>
+                  
+                  GitOSC
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://about.me/whyu" title="About.Me" target="_blank">About.Me</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://izihan.cf/" title="屮主席" target="_blank">屮主席</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.andrewei.info/" title="伟霸" target="_blank">伟霸</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务要求"><span class="nav-number">2.</span> <span class="nav-text">任务要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务分析"><span class="nav-number">3.</span> <span class="nav-text">任务分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#First函数"><span class="nav-number">3.1.</span> <span class="nav-text">First函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Closure函数"><span class="nav-number">3.2.</span> <span class="nav-text">Closure函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GO函数"><span class="nav-number">3.3.</span> <span class="nav-text">GO函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GetItemSet函数"><span class="nav-number">3.4.</span> <span class="nav-text">GetItemSet函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MakeTable函数"><span class="nav-number">3.5.</span> <span class="nav-text">MakeTable函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#语法分析过程"><span class="nav-number">4.</span> <span class="nav-text">语法分析过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浣熊</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"why8733"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Dqzwal3R9nGVVIWbOxPEjmYx-gzGzoHsz", "pwi1BqPEC844MTxco1ON9NQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,1024 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|consolas:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="数字图像处理,MATLAB,自适应滤波," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="浣熊窝" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Problem-1实验分析本实验主要实现对图像的自适应滤波，滤波函数为
+$g(x,y)=f(x,y)-\frac{5000}{\sigma_{f(x,y)^2} }(f(x,y)-m(x,y))$
+其中，
+$$m(x,y)=\frac19\sum_{i=-1}^1{\sum_{j=-1}^1{f(x+i, y+j)}}$$
+$$\sigma_{f(x,y)^2}=\frac19\sum_{i=-1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字图像处理实验报告">
+<meta property="og:url" content="http://whaoyu.com/2016/04/10/digital-image-processing/index.html">
+<meta property="og:site_name" content="浣熊窝">
+<meta property="og:description" content="Problem-1实验分析本实验主要实现对图像的自适应滤波，滤波函数为
+$g(x,y)=f(x,y)-\frac{5000}{\sigma_{f(x,y)^2} }(f(x,y)-m(x,y))$
+其中，
+$$m(x,y)=\frac19\sum_{i=-1}^1{\sum_{j=-1}^1{f(x+i, y+j)}}$$
+$$\sigma_{f(x,y)^2}=\frac19\sum_{i=-1">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/1.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/2.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/3.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/4.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/5.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/6.png">
+<meta property="og:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/7.png">
+<meta property="og:updated_time" content="2017-01-20T09:02:06.959Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数字图像处理实验报告">
+<meta name="twitter:description" content="Problem-1实验分析本实验主要实现对图像的自适应滤波，滤波函数为
+$g(x,y)=f(x,y)-\frac{5000}{\sigma_{f(x,y)^2} }(f(x,y)-m(x,y))$
+其中，
+$$m(x,y)=\frac19\sum_{i=-1}^1{\sum_{j=-1}^1{f(x+i, y+j)}}$$
+$$\sigma_{f(x,y)^2}=\frac19\sum_{i=-1">
+<meta name="twitter:image" content="http://whaoyu.com/2016/04/10/digital-image-processing/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6279647023285143000',
+      author: '浣熊'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://whaoyu.com/2016/04/10/digital-image-processing/"/>
+
+
+
+
+
+  <title> 数字图像处理实验报告 | 浣熊窝 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?2d88a85f453733863177faa20ea0e05b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">浣熊窝</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Hello, world!</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://whaoyu.com/2016/04/10/digital-image-processing/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="浣熊">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/default_avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浣熊窝">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="浣熊窝" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数字图像处理实验报告
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-10T22:57:47+08:00">
+                2016-04-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/课程设计/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/04/10/digital-image-processing/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/10/digital-image-processing/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/04/10/digital-image-processing/" class="leancloud_visitors" data-flag-title="数字图像处理实验报告">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Problem-1"><a href="#Problem-1" class="headerlink" title="Problem-1"></a>Problem-1</h1><h2 id="实验分析"><a href="#实验分析" class="headerlink" title="实验分析"></a>实验分析</h2><p>本实验主要实现对图像的自适应滤波，滤波函数为</p>
+<p>$g(x,y)=f(x,y)-\frac{5000}{\sigma_{f(x,y)^2} }(f(x,y)-m(x,y))$</p>
+<p>其中，</p>
+<p>$$m(x,y)=\frac19\sum_{i=-1}^1{\sum_{j=-1}^1{f(x+i, y+j)}}$$</p>
+<p>$$\sigma_{f(x,y)^2}=\frac19\sum_{i=-1}^1{\sum_{j=-1}^1}{(f(x+i,y+j)-m(x,y))^2}$$</p>
+<p>由公式可知，m(x,y)和$\sigma_{f(x,y)^2}$是对于点(x,y)的3×3邻域求均值和方差，于是可以直接使用MATLAB中的mean函数和var函数进行代替，直接进行运算。<br>高斯滤波，通过加权平均后，图像变的模糊，噪点有所减少，但是图像损失了大量细节；中值滤波，对于本实验所产生的椒盐噪声应该有较好的处理，但是实际上，图片的涂抹很严重，损失了大量的信息；自适应滤波，对噪点消除的不是很理想，但是保留了图片本身影响最小。我认为自适应滤波应该是本实验中还原效果最好的滤波器。<br>同时发现，程序的运行速度特别慢，大约要14秒，使用MATLAB中的计时运行后发现，主要的时间集中在mean函数上，对于500×350的图像，mean函数共调用了350000次。为优化时间，将mean函数改成求和并除以9，运行速度提升明显，只需要2.3秒左右。</p>
+<h2 id="Read-image-and-Add-noise"><a href="#Read-image-and-Add-noise" class="headerlink" title="Read image and Add noise"></a>Read image and Add noise</h2><p>噪声产生公式<br>$$f(x,y)=\begin{cases}<br>255 &amp; &amp; {f_0(x, y) &gt; t_1(fx, y)} \\<br>0 &amp; &amp; {f_0(x, y) &lt; t_1(fx, y)} \\<br>f_0(x, y) &amp; &amp; {otherwise}\end{cases}$$</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">origin=imread(<span class="string">'lena.jpg'</span>);</div><div class="line">origin=rgb2gray(origin);</div><div class="line">[m,n]=<span class="built_in">size</span>(origin);</div><div class="line">t1 = <span class="built_in">round</span>(<span class="number">255</span> * <span class="built_in">rand</span>(m, n));</div><div class="line">t2 = <span class="built_in">round</span>(<span class="number">255</span> * <span class="built_in">rand</span>(m, n));</div><div class="line">origin2=origin;</div><div class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:m</div><div class="line">    <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n</div><div class="line">        <span class="keyword">if</span> origin2(<span class="built_in">i</span>,<span class="built_in">j</span>)&amp;gt;t1(<span class="built_in">i</span>,<span class="built_in">j</span>)</div><div class="line">            origin(<span class="built_in">i</span>,<span class="built_in">j</span>)=<span class="number">255</span>;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> origin2(<span class="built_in">i</span>,<span class="built_in">j</span>)&amp;lt;t2(<span class="built_in">i</span>,<span class="built_in">j</span>)</div><div class="line">            origin(<span class="built_in">i</span>,<span class="built_in">j</span>)=<span class="number">0</span>;</div><div class="line">            <span class="keyword">end</span></div><div class="line">        <span class="keyword">end</span></div><div class="line">    <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line">figure(<span class="number">1</span>);</div><div class="line">imshow(origin);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/1.png" alt=""></p>
+<h2 id="Gaussian-filter"><a href="#Gaussian-filter" class="headerlink" title="Gaussian filter"></a>Gaussian filter</h2><p>3x3的高斯滤波器</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">gaussian=fspecial(<span class="string">'gaussian'</span>,[<span class="number">3</span>,<span class="number">3</span>],<span class="number">1</span>);</div><div class="line">g1=imfilter(origin,gaussian,<span class="string">'conv'</span>,<span class="string">'symmetric'</span>);</div><div class="line">figure(<span class="number">2</span>);</div><div class="line">imshow(g1);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/2.png" alt=""></p>
+<h2 id="Median-filter"><a href="#Median-filter" class="headerlink" title="Median filter"></a>Median filter</h2><p>3x3的中值滤波器</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">g2=medfilt2(origin,[<span class="number">3</span>,<span class="number">3</span>]);</div><div class="line">figure(<span class="number">3</span>);</div><div class="line">imshow(g2);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/3.png" alt=""></p>
+<h2 id="Adaptive-filter"><a href="#Adaptive-filter" class="headerlink" title="Adaptive filter"></a>Adaptive filter</h2><p>$$g(x,y)=f(x,y)-\frac{5000}{\sigma^2_{f(x,y)}}(f(x,y)-m(x,y))$$</p>
+<p>其中,</p>
+<p>$$m(x,y)=\frac19\sum\limits_{i=-1}^1\sum\limits_{j=-1}^1f(x+i,y+j)$$</p>
+<p>$$\sigma^2_{f(x,y)}=\frac19\sum\limits_{i=-1}^1\sum\limits_{j=-1}^1(f(x+i,y+j)-m(x,y))^2$$</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">extendim = <span class="built_in">zeros</span>(m+<span class="number">2</span>,n+<span class="number">2</span>);</div><div class="line">extendim(<span class="number">2</span>:m+<span class="number">1</span>,<span class="number">2</span>:n+<span class="number">1</span>) = origin(:,:,<span class="number">1</span>);</div><div class="line">extendim(<span class="number">1</span>,<span class="number">2</span>:n+<span class="number">1</span>) = origin(<span class="number">1</span>,:,<span class="number">1</span>);</div><div class="line">extendim(m+<span class="number">2</span>,<span class="number">2</span>:n+<span class="number">1</span>) = origin(m,:,<span class="number">1</span>);</div><div class="line">extendim(<span class="number">2</span>:m+<span class="number">1</span>,<span class="number">1</span>) = origin(:,<span class="number">1</span>,<span class="number">1</span>);</div><div class="line">extendim(<span class="number">2</span>:m+<span class="number">1</span>,n+<span class="number">2</span>) = origin(:,n,<span class="number">1</span>);</div><div class="line">g4 = uint8(<span class="built_in">zeros</span>(m, n));</div><div class="line">one = <span class="built_in">ones</span>(<span class="number">3</span>, <span class="number">3</span>);</div><div class="line"><span class="keyword">for</span> x = <span class="number">1</span> : m</div><div class="line">    <span class="keyword">for</span> y = <span class="number">1</span> : n</div><div class="line">        temp = extendim(x:x + <span class="number">2</span>, y: y + <span class="number">2</span>);</div><div class="line"><span class="comment">%         avg_1 = mean(mean(temp)); %相当于m(x,y)</span></div><div class="line"><span class="comment">%         d2_1 = var(temp(:), 1);      %想到与sigma_squared(x,y)</span></div><div class="line"><span class="comment">%         g4_1(x, y) = extendim(x + 1, y + 1) - (5000 / d2_1) * (extendim(x + 1, y + 1) - avg_1);</span></div><div class="line">        avg = sum(sum(temp))/<span class="number">9</span>;</div><div class="line">        d2 = (temp - avg * one).^<span class="number">2</span>;</div><div class="line">        d2 = sum(sum(d2))/<span class="number">9</span>;</div><div class="line">        g4(x, y) = extendim(x + <span class="number">1</span>, y + <span class="number">1</span>) - (<span class="number">5000</span> / d2) * (extendim(x + <span class="number">1</span>, y + <span class="number">1</span>) - avg);</div><div class="line">    <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line">figure(<span class="number">4</span>);</div><div class="line">imshow(g4);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/4.png" alt=""></p>
+<h1 id="Problem-2"><a href="#Problem-2" class="headerlink" title="Problem-2"></a>Problem-2</h1><h2 id="Matlab中imfilter函数的基本原理和数学公式"><a href="#Matlab中imfilter函数的基本原理和数学公式" class="headerlink" title="Matlab中imfilter函数的基本原理和数学公式"></a>Matlab中imfilter函数的基本原理和数学公式</h2><p>函数原型</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">G = imfilter(F, W, filtering_mode, boundary_options, size_options)</div></pre></td></tr></table></figure>
+<p>其中G为输出图像，F为原图像，W为滤波器，<code>filtering_mode</code>用于指定在滤波过程中是使用“相关”还是“卷积”。<code>boundary_options</code>用于处理边界充零问题，边界的大小由滤波器的大小确定。具体参数选项见下表：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>filtering_mode</td>
+<td>‘corr’</td>
+<td>通过使用相关来完成，该值为默认。</td>
+</tr>
+<tr>
+<td></td>
+<td>‘conv’</td>
+<td>通过使用卷积来完成</td>
+</tr>
+<tr>
+<td>boundary_options</td>
+<td>‘X’</td>
+<td>输入图像的边界通过用值X（无引号）来填充扩展,其默认值为0</td>
+</tr>
+<tr>
+<td></td>
+<td>‘replicate’</td>
+<td>图像大小通过复制外边界的值来扩展</td>
+</tr>
+<tr>
+<td></td>
+<td>‘symmetric’</td>
+<td>图像大小通过镜像反射其边界来扩展</td>
+</tr>
+<tr>
+<td></td>
+<td>‘circular’</td>
+<td>&gt;图像大小通过将图像看成是一个二维周期函数的一个周期来扩展</td>
+</tr>
+<tr>
+<td>size_options</td>
+<td>‘full’</td>
+<td>输出图像的大小与被扩展图像的大小相同</td>
+</tr>
+<tr>
+<td></td>
+<td>‘same’</td>
+<td>输出图像的大小与输入图像的大小相同。这可通过将滤波掩模的中心点的偏移限制到原图像中包含的点来实现，该值为默认值。</td>
+</tr>
+</tbody>
+</table>
+<p>函数imfilter的一半过程为：</p>
+<ol>
+<li>根据选项对图片进行边缘扩充，得到中间图像T</li>
+<li>根据选项，对中间图像T和滤波器W进行卷积操作或者相关操作</li>
+<li>根据选项，对中间图像T做调整并输出</li>
+</ol>
+<p>其中，<br>卷积操作的数学公式为：$G=F*W$，<br>展开后为：<br>$$G(x,y)=\sum_{i=-k}^k\sum_{j=-k}^k{f(x-i,y-j)⋅W(i,j)}$$</p>
+<p>其中，2k+1为滤波器W的宽度或高度。<br>相关操作数学公式：<br>$$G=F∙W$$，<br>展开后为：<br>$$G(x,y)=\sum_{i=-k}^k\sum_{j=-k}^k{f(i-x,y-j)⋅W(i,j)}$$</p>
+<p>其中，2k+1为滤波器W的宽度或高度。</p>
+<h2 id="Which-of-the-three-sharpening-procedures-is-visually-more-appealing-to-you-Why"><a href="#Which-of-the-three-sharpening-procedures-is-visually-more-appealing-to-you-Why" class="headerlink" title="Which of the three sharpening procedures is visually more appealing to you? Why?"></a>Which of the three sharpening procedures is visually more appealing to you? Why?</h2><p>现象：</p>
+<ul>
+<li>单纯使用+8的拉普拉斯滤波器，图像的边缘非常明显，但是图片中存在大量的噪点。</li>
+<li>通过高斯滤波后，图像的噪点减少，但是边缘也变的模糊。</li>
+<li>-8的拉普拉斯滤波器效果比-4的滤波器效果要好，噪点较少，图像边缘较明显。</li>
+</ul>
+<p>原因：<br>使用高斯滤波对图像进行平滑处理，使图像中的颜色变化剧烈的部分变平滑，因此在边缘检测的时候，图像整体的噪点下降，同时，-8的滤波器对于边缘的增强效果要好于-4.</p>
+<h2 id="Read-image-and-Define-filter"><a href="#Read-image-and-Define-filter" class="headerlink" title="Read image and Define filter"></a>Read image and Define filter</h2><ul>
+<li>filterlap1 中心+8的拉普拉斯滤波器</li>
+<li>filterlap2 中心-4的拉普拉斯滤波器</li>
+<li>filterlap3 中心-8的拉普拉斯滤波器</li>
+</ul>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">im = imread(<span class="string">'Lena.jpg'</span>);</div><div class="line">im=rgb2gray(im);</div><div class="line">filterlap1 = [<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">-1</span>;<span class="number">-1</span>,<span class="number">8</span>,<span class="number">-1</span>;<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">-1</span>];</div><div class="line">filterlap2 = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>;<span class="number">1</span>,<span class="number">-4</span>,<span class="number">1</span>;<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>];</div><div class="line">filterlap3 = [<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>;<span class="number">1</span>,<span class="number">-8</span>,<span class="number">1</span>;<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>];</div></pre></td></tr></table></figure>
+<h2 id="Image-sharpening-using-the-3x3-Laplacian-filter-with-8-at-the-center"><a href="#Image-sharpening-using-the-3x3-Laplacian-filter-with-8-at-the-center" class="headerlink" title="Image sharpening using the 3x3 Laplacian filter with +8 at the center."></a>Image sharpening using the 3x3 Laplacian filter with +8 at the center.</h2><figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">im1=imfilter(im,filterlap1,<span class="string">'conv'</span>,<span class="string">'symmetric'</span>);</div><div class="line">figure(<span class="number">1</span>);</div><div class="line">imshow(im1);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/5.png" alt=""></p>
+<h2 id="The-input-image-is-first-smoothed-with-the-3x3-σ-5-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-4-at-the-center"><a href="#The-input-image-is-first-smoothed-with-the-3x3-σ-5-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-4-at-the-center" class="headerlink" title="The input image is first smoothed with the 3x3 ,σ=5 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -4 at the center."></a>The input image is first smoothed with the 3x3 ,σ=5 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -4 at the center.</h2><figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">gaussian1 = fspecial(<span class="string">'gaussian'</span>,[<span class="number">3</span>,<span class="number">3</span>],<span class="built_in">sqrt</span>(<span class="number">5</span>));</div><div class="line">im2=imfilter(im,gaussian1,<span class="string">'conv'</span>,<span class="string">'symmetric'</span>);      <span class="comment">%高斯滤波</span></div><div class="line">im2=imfilter(im2,filterlap2,<span class="string">'conv'</span>,<span class="string">'symmetric'</span>);    <span class="comment">%拉普拉斯滤波</span></div><div class="line">figure(<span class="number">2</span>);</div><div class="line">imshow(im2);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/6.png" alt=""></p>
+<h2 id="The-input-image-is-first-smoothed-with-the-3x3-σ-1-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-8-at-the-center"><a href="#The-input-image-is-first-smoothed-with-the-3x3-σ-1-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-8-at-the-center" class="headerlink" title="The input image is first smoothed with the 3x3 , σ=1 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -8 at the center."></a>The input image is first smoothed with the 3x3 , σ=1 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -8 at the center.</h2><figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">gaussian2 = fspecial(<span class="string">'gaussian'</span>, [<span class="number">3</span>, <span class="number">3</span>], <span class="number">1</span>);</div><div class="line">im3 = imfilter(im, gaussian2, <span class="string">'conv'</span>, <span class="string">'symmetric'</span>);     <span class="comment">%高斯滤波</span></div><div class="line">im3 = imfilter(im3, filterlap3, <span class="string">'conv'</span>, <span class="string">'symmetric'</span>);   <span class="comment">%拉普拉斯滤波</span></div><div class="line">figure(<span class="number">3</span>);</div><div class="line">imshow(im3);</div></pre></td></tr></table></figure>
+<p><img src="/2016/04/10/digital-image-processing/7.png" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数字图像处理/" rel="tag"># 数字图像处理</a>
+          
+            <a href="/tags/MATLAB/" rel="tag"># MATLAB</a>
+          
+            <a href="/tags/自适应滤波/" rel="tag"># 自适应滤波</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/02/sqlite-recno/" rel="next" title="SQLite获取RecNo">
+                <i class="fa fa-chevron-left"></i> SQLite获取RecNo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/01/lexical/" rel="prev" title="动手写词法分析器">
+                动手写词法分析器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/04/10/digital-image-processing/"
+     data-title="数字图像处理实验报告"
+     data-content=""
+     data-url="http://whaoyu.com/2016/04/10/digital-image-processing/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/10/digital-image-processing/"
+           data-title="数字图像处理实验报告" data-url="http://whaoyu.com/2016/04/10/digital-image-processing/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="浣熊" />
+          <p class="site-author-name" itemprop="name">浣熊</p>
+          <p class="site-description motion-element" itemprop="description">一只宅在窝里的浣熊</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/873314461" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://git.oschina.net/873314461" target="_blank" title="GitOSC">
+                  
+                    <i class="fa fa-fw fa-git"></i>
+                  
+                  GitOSC
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://about.me/whyu" title="About.Me" target="_blank">About.Me</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://izihan.cf/" title="屮主席" target="_blank">屮主席</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://blog.andrewei.info/" title="伟霸" target="_blank">伟霸</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem-1"><span class="nav-number">1.</span> <span class="nav-text">Problem-1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实验分析"><span class="nav-number">1.1.</span> <span class="nav-text">实验分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-image-and-Add-noise"><span class="nav-number">1.2.</span> <span class="nav-text">Read image and Add noise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gaussian-filter"><span class="nav-number">1.3.</span> <span class="nav-text">Gaussian filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Median-filter"><span class="nav-number">1.4.</span> <span class="nav-text">Median filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adaptive-filter"><span class="nav-number">1.5.</span> <span class="nav-text">Adaptive filter</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem-2"><span class="nav-number">2.</span> <span class="nav-text">Problem-2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Matlab中imfilter函数的基本原理和数学公式"><span class="nav-number">2.1.</span> <span class="nav-text">Matlab中imfilter函数的基本原理和数学公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Which-of-the-three-sharpening-procedures-is-visually-more-appealing-to-you-Why"><span class="nav-number">2.2.</span> <span class="nav-text">Which of the three sharpening procedures is visually more appealing to you? Why?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-image-and-Define-filter"><span class="nav-number">2.3.</span> <span class="nav-text">Read image and Define filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Image-sharpening-using-the-3x3-Laplacian-filter-with-8-at-the-center"><span class="nav-number">2.4.</span> <span class="nav-text">Image sharpening using the 3x3 Laplacian filter with +8 at the center.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-input-image-is-first-smoothed-with-the-3x3-σ-5-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-4-at-the-center"><span class="nav-number">2.5.</span> <span class="nav-text">The input image is first smoothed with the 3x3 ,σ=5 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -4 at the center.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-input-image-is-first-smoothed-with-the-3x3-σ-1-Gaussian-filter-The-resulting-image-is-then-sharpened-using-the-Laplacian-filter-with-8-at-the-center"><span class="nav-number">2.6.</span> <span class="nav-text">The input image is first smoothed with the 3x3 , σ=1 Gaussian filter. The resulting image is then sharpened using the Laplacian filter with -8 at the center.</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浣熊</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"why8733"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Dqzwal3R9nGVVIWbOxPEjmYx-gzGzoHsz", "pwi1BqPEC844MTxco1ON9NQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>
